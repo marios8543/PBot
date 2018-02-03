@@ -11,35 +11,35 @@ The rewrite of the original Implying_Pbot
 - Warning system
 
 ## Command list:
-- >>setwelcome
+- setwelcome
 Sets the welcome message channel
-- >>setgoodbye
+- setgoodbye
 Sets the goodbye message channel
-- >>setevent
+- setevent
 Sets the event channel (namechanges etc)
-- >>setlogging
+- setlogging
 Sets the message logging channel (Deletes, Edits)
-- >>logging
+- logging
 Toggles logging on/off
-- >>check *tag*
+- check *tag*
 Gets some basic info of the member tagged
-- >>warn *tag* *reason*
+- warn *tag* *reason*
 Warns the member. Will be banned once the warn limit is reached
-- >>verify *tag*
+- verify *tag*
 Verifies an unverified member manually
-- >>clearwarnings *tag*
+- clearwarnings *tag*
 Sets a member's warning count to 0 (Independent warnings are still logged)
-- >>massdelete *id* *id*
+- massdelete *id* *id*
 Deletes all the messages between 2 message IDs given
-- >>dashboard
+- dashboard
 Access the dashboard for your server and change bot settings
-- >>softban *tag *mins*
+- softban *tag *mins*
 Makes a member unverified for a set number of minutes (Max 60)
-- >>nickname *tag* *nickname*
+- nickname *tag* *nickname*
 Sets the nickname for a member
-- >>bsf
+- bsf
 Gets the current venezuelan bolivar price
-- >>emoji *emoji*
+- emoji *emoji*
 Gives an enlarged image/download link for an emoji
 
 More coming soon...
