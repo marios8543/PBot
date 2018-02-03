@@ -509,6 +509,7 @@ async def bsf():
 
 @client.command()
 async def emoji(emoji):
+ server = client.get_server('374575173782863874')
  emoji_id = str(emoji)[-19:]
  emoji_id = emoji_id[:-1]
  emojis = client.get_all_emojis()
@@ -521,8 +522,6 @@ async def emoji(emoji):
          print(url)
          embed.set_image(url=url)
          await client.say(embed=embed)
-     else:
-         await client.say(":negative_squared_cross_mark: Sorry I couldn't find that emoji. Keep in mind that default emojis don't work ")
 
 #def exit_backup():
 
