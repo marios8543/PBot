@@ -50,7 +50,7 @@ def remove_non_ascii(text):
 client = Bot(description="pbot_public", command_prefix=">>")
 @client.event
 async def on_ready():
-    print('Logged in as '+client.user.name+' (ID:'+client.user.id+') | Connected to '+str(len(client.servers))+' servers | Connected to '+str(len(set(client.get_all_members())))+' users')
+    print('Logged in as '+client.user.name+' (ID:'+client.user.id+') | Connected to '+str(len(client.servers))+' servers | Connected to '+str(len(set(client.get_all_members())))+' users github.com/marios8543/PBot/')
     await client.change_presence(game=discord.Game(name="DON'T type >>help"))
 
 
