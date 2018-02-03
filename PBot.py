@@ -511,7 +511,18 @@ async def bsf():
 async def emoji(emoji):
  emoji_id = str(emoji)[-19:]
  emoji_id = emoji_id[:-1]
- await client.say('https://cdn.discordapp.com/emojis/'+emoji_id+'.png')
+ emojis = client.get_all_emojis()
+ for emoji in emojis:
+     if emoji.id == emoji_id:
+         embed = discord.Embed(Title='Emoji')
+         embed.add_field(name='Emoji name', value=emoji.name,inline=False)
+         embed.add_field(name='Emoji ID', value=str(emoji.id),inline=False)
+         url = emoji.url
+         print(url)
+         embed.set_image(url=url)
+         await client.say(embed=embed)
+     else:
+         await client.say(":negative_squared_cross_mark: Sorry I couldn't find that emoji. Keep in mind that default emojis don't work ")
 
 #def exit_backup():
 
