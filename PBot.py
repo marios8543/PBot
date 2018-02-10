@@ -352,6 +352,14 @@ async def warn(ctx,user,reason):
                   db.execute("""INSERT INTO warnings (discord_name,discord_id,server_id,warn_datetime,admin,reason) values(%s,%s,%s,%s,%s,%s)""",(str(warnman.name+str(warnman.discriminator)),int(user_id),int(server.id),timestamp,str(ctx.message.author.name+ctx.message.author.discriminator),reason))
                   conn.commit()
                   await client.say(':exclamation: <@!'+str(user_id)+'> has been warned. His warning count is now '+str(warns+1)+' ('+str(int(max_warns)-int(warns) -1)+' warns left)')
+                  embed=discord.Embed(title=":exclamation: User Warned", color=0xed00f9)
+                  embed.add_field(name="User warned", value=warnman.name+'#'+str(warnman.discriminator), inline=False)
+                  embed.add_field(name="Admin in charge", value=ctx.message.author.name, inline=False)
+                  embed.add_field(name="Reason", value=reason, inline=False)
+                  embed.add_field(name="Warning count", value=str(warns+1)+' ('+str(int(max_warns)-int(warns) -1)+' warns left)', inline=False)
+                  embed.set_footer(text=str(timestamp))
+                  dest = l_channels[str(server.id)]
+                  await client.send_message(client.get_channel(str(dest)),embed=embed)
               else:
                   member2server = server.get_member(user_id)
                   msg = await client.say(':exclamation: User has 3 warnings and will be banned! Click on :white_check_mark: to confirm...')
@@ -433,8 +441,6 @@ async def clearwarnings(ctx,arg):
  if ctx.message.author.server_permissions.ban_members == True:
      user2check = ctx.message.raw_mentions
      user_id = ''.join(user2check)
-     print(str(ctx.message.author.id))
-     print(str(server.id))
      db.execute("""UPDATE members SET warns=0 WHERE discord_id=%s AND server_id=%s""",(user_id,int(server.id)))
      conn.commit()
      await client.say(':white_check_mark: <@!'+user_id+'> is now clear!')
@@ -523,9 +529,8 @@ async def emoji(emoji):
          embed.set_image(url=url)
          await client.say(embed=embed)
 
-#def exit_backup():
-
 
 
 token = open("token.txt",'r').read()
+print(token)
 client.run(token)
