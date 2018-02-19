@@ -94,7 +94,7 @@ else{
     </div>
     ';
 }
-if(empty($log_whitelist == false)){
+if($log_whitelist != '0')){
     $whitelist = json_decode($log_whitelist,$assoc=true);
     $whitelist = implode(",",$whitelist);
     echo'
