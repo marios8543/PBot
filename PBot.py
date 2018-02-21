@@ -82,6 +82,6 @@ async def on_ready():
 
 
 
-#token = open("token.txt",'r').read()
-#print(token)
-client.run('MzcxMzcwMzIxNDAxNjEwMjQx.DW9Krw.dKiCbAaeuj67LZakRdQWDr6lUVY')
+token = open("token.txt",'r').read()
+print(token)
+client.run(token)
