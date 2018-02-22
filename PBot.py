@@ -12,7 +12,7 @@ from random import randint
 import time
 import codecs
 import os
-#from modules import *
+from modules import *
 
 warn_whitelist=['196224042988994560','180800780960399361','207559404466208779','386505899713495051']
 logging_blacklist=['196224042988994560','351236161684897792','381066546535202816']
