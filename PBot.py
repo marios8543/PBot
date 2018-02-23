@@ -52,9 +52,6 @@ client = Bot(description="pbot_public", command_prefix=">>")
 async def on_ready():
     print('Logged in as '+client.user.name+' (ID:'+client.user.id+') | Connected to '+str(len(client.servers))+' servers | Connected to '+str(len(set(client.get_all_members())))+' users github.com/marios8543/PBot/')
     await client.change_presence(game=discord.Game(name="DON'T type >>help"))
-    modules = os.listdir('modules')
-    modules = ' ,'.join(map(str, modules))
-    print(modules)
     for server in client.servers:
         channel = client.get_channel(e_channels[server.id])
         message ='''.
