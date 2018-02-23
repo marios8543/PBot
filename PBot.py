@@ -11,6 +11,8 @@ import hashlib
 from random import randint
 import time
 import codecs
+import logging
+
 
 warn_whitelist=['196224042988994560','180800780960399361','207559404466208779','386505899713495051']
 logging_blacklist=['196224042988994560','351236161684897792','381066546535202816']
@@ -46,11 +48,17 @@ for srv in data:
 def remove_non_ascii(text):
     return ''.join([i if ord(i) < 128 else ' ' for i in str(text)])
 
+#Function for getting timstamps
+def timestamp():
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return timestamp
+
 #Initial setup
 client = Bot(description="pbot_public", command_prefix=">>")
 @client.event
 async def on_ready():
-    print('Logged in as '+client.user.name+' (ID:'+client.user.id+') | Connected to '+str(len(client.servers))+' servers | Connected to '+str(len(set(client.get_all_members())))+' users github.com/marios8543/PBot/')
+    print('>PBot1.0 - Made with <3 by Uwumin/tzatzikiweeb - github.com/marios8543/PBot')
+    print(str(timestamp())+' Logged in as '+client.user.name+' (ID:'+client.user.id+') | Connected to '+str(len(client.servers))+' servers | Connected to '+str(len(set(client.get_all_members())))+' users')
     await client.change_presence(game=discord.Game(name="DON'T type >>help"))
     for server in client.servers:
         channel = client.get_channel(e_channels[server.id])
@@ -79,8 +87,9 @@ async def on_ready():
 #Server join event
 @client.event
 async def on_server_join(server):
+ print(str(timestamp())+' Joined guild '+server.name+' with ID '+str(server.id))
  server_owner = server.owner
- timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+ timestamp = timestamp()
  db.execute("""INSERT into servers (server_id,server_name,added_on,entry_text,entry_text_pm,goodbye_text,log_whitelist) values(%s,%s,%s,"Greetings, **{0}**. Welcome to ***{1}***. Enjoy your stay ! ","This is a sample text. Fill in the form and type `>>verify` to gain access to the server","A'ight farewell **{}**...",%s)""",(server.id, server.name, timestamp,'["0"]'))
  conn.commit()
  msg = await client.send_message(server_owner,"`Hey I'm >PBot. Thanks for inviting me to your server. Read the TOS and react with 👍 to this message to continue" )
@@ -106,6 +115,7 @@ async def on_server_join(server):
 #Server leave event
 @client.event
 async def on_server_remove(server):
+    print(str(timestamp())+' Left guild '+server.name+' with ID '+str(server.id))
     server_id = server.id
     db.execute("DELETE FROM servers WHERE server_id="+str(server_id))
     db.execute("DELETE FROM members WHERE server_id="+str(server_id))
@@ -120,6 +130,7 @@ async def setwelcome(ctx):
  member = server.get_member(ctx.message.author.id)
  permissions = member.server_permissions
  if permissions.manage_server == True:
+      print(str(timestamp())+' '+ctx.message.author.id+' set the welcome channel of '+server.id+' to '+ctx.message.channel.id)
       await client.say(':white_check_mark: Alrightie. Ill greet all the newcomers here...')
       w_channels[str(server.id)] = str(ctx.message.channel.id)
       db.execute("""UPDATE servers set welcome_channel=%s WHERE server_id=%s""", (int(ctx.message.channel.id), int(ctx.message.server.id)))
@@ -133,6 +144,7 @@ async def setgoodbye(ctx):
  server = ctx.message.server
  member = server.get_member(ctx.message.author.id)
  permissions = member.server_permissions
+ print(str(timestamp())+' '+ctx.message.author.id+' set the goodbye channel of '+server.id+' to '+ctx.message.channel.id)
  if permissions.manage_server == True:
       await client.say(':white_check_mark: Alrightie. Ill rid all the leaving faggots here...')
       g_channels[str(server.id)] = str(ctx.message.channel.id)
@@ -147,6 +159,7 @@ async def setevent(ctx):
  server = ctx.message.server
  member = server.get_member(ctx.message.author.id)
  permissions = member.server_permissions
+ print(str(timestamp())+' '+ctx.message.author.id+' set the event channel of '+server.id+' to '+ctx.message.channel.id)
  if permissions.manage_server == True:
       await client.say(":white_check_mark: A'ight this will be the default event channel from now on...")
       e_channels[str(server.id)] = str(ctx.message.channel.id)
@@ -162,6 +175,7 @@ async def setlogging(ctx):
  server = ctx.message.server
  member = server.get_member(ctx.message.author.id)
  permissions = member.server_permissions
+ print(str(timestamp())+' '+ctx.message.author.id+' set the logging channel of '+server.id+' to '+ctx.message.channel.id)
  if permissions.manage_server == True:
       l_channels[str(server.id)] = str(ctx.message.channel.id)
       await client.say(':white_check_mark: Alrightie. Ill log stuff here...')
@@ -183,10 +197,12 @@ async def logging(ctx):
          await client.say(':white_check_mark: Message change logging is now on!')
          db.execute("UPDATE servers SET log_msgchanges=1 WHERE server_id="+str(server.id))
          log_status[str(server.id)] = '1'
+         print(str(timestamp())+' '+ctx.message.author.id+' switched on logging for '+server.id)
      else:
          await client.say(':white_check_mark: Message change logging is now off!')
          db.execute("UPDATE servers SET log_msgchanges=0 WHERE server_id="+str(server.id))
          log_status[str(server.id)] = '0'
+         print(str(timestamp())+' '+ctx.message.author.id+' switched off logging for '+server.id)
  else:
      await client.say(":negative_squared_cross_mark: Only members with the `Manage Server` permission can use this")
 
@@ -198,8 +214,9 @@ async def on_member_join(member):
  server = member.server
  member_non_ascii = remove_non_ascii(member)
  unverified = discord.utils.get(server.roles, name="Unverified")
+ print(str(timestamp())+' '+member.id+' joined '+server.id)
  await client.add_roles(member, unverified)
- timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+ timestamp = timestamp()
  db.execute("""INSERT into members (discord_name,discord_id,server_id,join_date,verified,in_server) values(%s,%s,%s,%s,0,1)""",(str(member_non_ascii), int(member.id),int(server.id),timestamp))
  conn.commit()
  welcome_channel = w_channels[str(server.id)]
@@ -222,46 +239,11 @@ async def on_member_join(member):
 #Member leave event
 @client.event
 async def on_member_remove(member):
+ print(str(timestamp())+' '+member.id+' left '+member.server.id)
  db.execute("""UPDATE members SET in_server=0 WHERE discord_id=%s AND server_id=%s""",(str(member.id), str(member.server.id)))
  goodbye_channel = g_channels[str(member.server.id)]
  goodbye_text = g_txt[str(member.server.id)]
  await client.send_message(client.get_channel(str(goodbye_channel)), str(goodbye_text).format(str(member.name)))
-
-#Verify command to be used in conjuction with entry forms (D E P R E C A T E D)
-#@client.command(pass_context=True)
-async def verify(ctx, member: discord.Member = None):
- member2 = ctx.message.author
- server = ctx.message.server
- member2server = server.get_member(member2.id)
- unverified = discord.utils.get(server.roles, name="Unverified")
- if unverified in member2server.roles:
-  db.execute("""SELECT verified from members WHERE discord_id=%s AND server_id=%s""",(str(member2.id), str(server.id)))
-  verified_status = db.fetchone()
-  if verified_status[0] is 1:
-        await client.remove_roles(member2server, unverified)
-        await client.say(':white_check_mark: You have been verified. Enjoy your stay :champagne:')
-  else:
-        await client.say(':negative_squared_cross_mark: Please fill in the form first. Check your PMs')
- else:
-  await client.say(':negative_squared_cross_mark: You are already verified')
-
-#Agree command to be used in non entry-form scenarios (D E P R E C A T E D)
-#client.command(pass_context=True)
-async def agree(ctx):
- db.execute("SELECT entry_form from servers WHERE server_id="+str(ctx.message.server.id))
- uses_form = db.fetchone()[0]
- if uses_form == 0:
-      server = ctx.message.server
-      member2 = ctx.message.author
-      member2server = server.get_member(member2.id)
-      unverified = discord.utils.get(server.roles, name="Unverified")
-      if unverified in member2server.roles:
-          await client.remove_roles(member2server,unverified)
-          await client.say(':white_check_mark: You have been verified. Enjoy your stay :champagne:')
-          db.execute("""UPDATE members SET verified=1 WHERE discord_id=%s AND server_id=%s""",(str(member2.id), str(server.id)))
-          conn.commit()
- else:
-     await client.say(":negative_squared_cross_mark: This server uses an entrance form system. Please check your DMs for more info or contact an admin")
 
 
 #Member namechange event
@@ -277,6 +259,7 @@ async def on_member_update(before, after):
   await client.send_message(client.get_channel(str(event_channel)), ':anger: <@!'+user_id+'> changed their name from **'+old_name+'** to **'+after.name+'**')
   db.execute("""UPDATE members SET discord_name=%s WHERE discord_id=%s AND server_id=%s""",(str(new_name_store), user_id, before.server.id))
   conn.commit()
+  print(str(timestamp())+' '+before.id+' changed his name from '+before.name+' to '+after.name)
 
 #Message delete event
 @client.event
@@ -285,6 +268,7 @@ async def on_message_delete(message):
  whitelist = log_wlists[str(message.server.id)]
  whitelist = json.loads(whitelist)
  logging_whitelist = logging_blacklist + whitelist
+ print(str(timestamp())+' A message by '+message.author.id+' was deleted in '+message.server.id)
  if active == '1' and str(message.author.id) not in logging_whitelist:
      dest = l_channels[str(message.server.id)]
      embed=discord.Embed(title=":exclamation: Deleted message", color=0xff0000)
@@ -304,6 +288,7 @@ async def on_message_edit(before, after):
     whitelist = log_wlists[str(before.server.id)]
     whitelist = json.loads(whitelist)
     logging_whitelist = logging_blacklist + whitelist
+    print(str(timestamp())+' A message by '+message.author.id+' was edited in '+message.server.id)
     if active == '1' and str(before.author.id) not in logging_whitelist:
         dest = l_channels[str(before.server.id)]
         message_id = before.id
@@ -328,9 +313,11 @@ async def check(ctx, arg):
  server = ctx.message.server
  member2 = ctx.message.author
  permissions = member2.server_permissions
+ print(str(timestamp())+' '+member2.id+' requested a check of someone and was denied in '+server.id)
  if permissions.ban_members == True:
      user2check = ctx.message.raw_mentions
      user_id = ''.join(user2check)
+     print(str(timestamp())+' '+member2.id+' requested a check of '+str(user_id)+' in '+server.id)
      db.execute("SELECT discord_name from members WHERE discord_id="+user_id)
      discord_name = db.fetchone()[0]
      db.execute("SELECT warns from members WHERE discord_id="+user_id)
@@ -344,7 +331,7 @@ async def check(ctx, arg):
      embed.add_field(name='Join Date', value=join_date, inline=False)
      embed.add_field(name='Warning Count', value=warning_count, inline=False)
      embed.add_field(name='Highest rank', value=top_role, inline=False)
-     embed.set_footer(text='Requested by '+str(member2)+' on '+str(datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+     embed.set_footer(text='Requested by '+str(member2)+' on '+str(timestamp()))
      await client.send_message(member2,embed=embed)
      await client.say(":white_check_mark: The user's report card has been sent in your DMs")
  else:
@@ -362,6 +349,7 @@ async def warn(ctx,user,reason):
      user_id = ''.join(user2check)
      warnman = server.get_member(str(user_id))
      if str(user_id) not in warn_whitelist:
+              print(str(timestamp())+' '+member2.id+' warned '+user_id+' in '+server.id+'with reason: '+reason)
               db.execute("SELECT max_warns from servers WHERE server_id="+str(server.id))
               max_warns = db.fetchone()[0]
               db.execute("SELECT warns from members WHERE discord_id="+user_id)
@@ -369,7 +357,7 @@ async def warn(ctx,user,reason):
               print(str(warns))
               print(str(max_warns))
               if int(warns)+1 != int(max_warns):
-                  timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                  timestamp = timestamp()
                   db.execute("""UPDATE members SET warns=%s WHERE discord_id=%s AND server_id=%s""",(int(warns)+1, user_id,str(server.id)))
                   db.execute("""INSERT INTO warnings (discord_name,discord_id,server_id,warn_datetime,admin,reason) values(%s,%s,%s,%s,%s,%s)""",(str(warnman.name+str(warnman.discriminator)),int(user_id),int(server.id),timestamp,str(ctx.message.author.name+ctx.message.author.discriminator),reason))
                   conn.commit()
@@ -408,10 +396,12 @@ async def massdelete(ctx,msgfrom,msgto):
  message_before = await client.get_message(channel,msgto)
  member2 = ctx.message.author
  permissions = member2.server_permissions
+ print(str(timestamp())+' '+member2.id+' requested a massdelete and was denied in '+server.id)
  if permissions.manage_messages == True:
       del_list = await client.purge_from(channel=channel,limit=100, check=None, before=message_before, after=message_after, around=None)
       print(str(del_list))
       await client.say(':white_check_mark: Successfully deleted '+str(len(del_list))+' messages !')
+      print(str(timestamp())+' '+member2.id+' massdeleted '+str(len(del_list))+' messages in '+server.id)
  else:
     await client.say(':negative_squared_cross_mark: Only members with the `Manage Messages` permission can use this!')
 
@@ -419,7 +409,7 @@ async def massdelete(ctx,msgfrom,msgto):
 @client.command(pass_context=True)
 async def dashboard(ctx):
     if ctx.message.author.server_permissions.manage_server == True:
-            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            timestamp = timestamp()
             author_id = str(ctx.message.author.id)
             author_name = str(ctx.message.author.name+ctx.message.author.discriminator)
             server_id = str(ctx.message.server.id)
@@ -436,6 +426,7 @@ async def dashboard(ctx):
             embed.set_footer(text="New dashboard coming soon...")
             await client.send_message(ctx.message.author,embed=embed)
             await client.say(":white_check_mark: Check your DMs to change the bot's settings...")
+            print(str(timestamp())+' '+member2.id+' requested dashboard access in '+server.id)
     else:
         await client.say(":negative_squared_cross_mark: Only members with the `Manage Server` permission can change the bot settings")
 
@@ -445,6 +436,7 @@ async def verify(ctx,arg):
  server = ctx.message.server
  member2 = ctx.message.author
  permissions = member2.server_permissions
+ print(str(timestamp())+' '+member2.id+' requested a manual verification of someone and was denied in '+server.id)
  if permissions.ban_members == True:
      unverified = discord.utils.get(server.roles, name="Unverified")
      user2check = ctx.message.raw_mentions
@@ -453,6 +445,7 @@ async def verify(ctx,arg):
      conn.commit()
      await client.remove_roles(server.get_member(user_id), unverified)
      await client.say(':white_check_mark: Manually verified <@!'+str(user_id)+'> !')
+     print(str(timestamp())+' '+member2.id+' manually verified '+str(user_id)+' in '+server.id)
  else:
      await client.say(':negative_squared_cross_mark: Only members with the `Ban Members` can use this!')
 
@@ -460,12 +453,14 @@ async def verify(ctx,arg):
 @client.command(pass_context=True)
 async def clearwarnings(ctx,arg):
  server = ctx.message.server
+ print(str(timestamp())+' '+member2.id+' requested a warning clear and was denied in '+server.id)
  if ctx.message.author.server_permissions.ban_members == True:
      user2check = ctx.message.raw_mentions
      user_id = ''.join(user2check)
      db.execute("""UPDATE members SET warns=0 WHERE discord_id=%s AND server_id=%s""",(user_id,int(server.id)))
      conn.commit()
      await client.say(':white_check_mark: <@!'+user_id+'> is now clear!')
+     print(str(timestamp())+' '+member2.id+' cleared the warnings of '+str(user_id)+' in '+server.id)
  else:
      await client.say(':negative_squared_cross_mark: Only admins can use this!')
 
@@ -479,12 +474,14 @@ async def ping():
  await client.edit_message(msg,'I work!!! `'+str(result)+'sec`')
  sql_result = conn.ping()
  await client.say(str(sql_result))
+ print(str(timestamp())+' '+member2.id+' pinged the bot. Response time: '+str(result))
 
 @client.command(pass_context=True)
 async def softban(ctx,arg,arg2):
  server = ctx.message.server
  member2 = ctx.message.author
  permissions = member2.server_permissions
+ print(str(timestamp())+' '+member2.id+' requested a softban` of someone and was denied in '+server.id)
  if permissions.ban_members == True:
     if int(arg2) <= 60:
       unverified = discord.utils.get(server.roles, name="Unverified")
@@ -496,6 +493,7 @@ async def softban(ctx,arg,arg2):
       await asyncio.sleep(time)
       await client.remove_roles(server.get_member(user_id), unverified)
       await client.say('<@!'+str(user_id)+'> is here again!')
+      print(str(timestamp())+' '+member2.id+' softbanned '+str(user_id)+' for '+str(arg2)+' minutes in '+server.id)
     else:
       await client.say(':negative_squared_cross_mark: Maximum softban time is 60 minutes')
 
@@ -514,9 +512,11 @@ async def nickname(ctx,name,nick):
  server = ctx.message.server
  member2 = ctx.message.author
  permissions = member2.server_permissions
+ print(str(timestamp())+' '+member2.id+' requested a nickname change and was denied in '+server.id)
  if permissions.manage_nicknames == True:
      user2check = ctx.message.raw_mentions
      user_id = ''.join(user2check)
+     print(str(timestamp())+' '+member2.id+' changed '+str(user_id)+' nickname to '+nick+' in '+server.id)
      await client.change_nickname(server.get_member(str(user_id)), str(nick))
      await client.say(":white_check_mark: Successfully changed <@!"+user_id+">'s nickname to **"+str(nick)+"**")
  else:
