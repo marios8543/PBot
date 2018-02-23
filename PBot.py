@@ -52,6 +52,31 @@ client = Bot(description="pbot_public", command_prefix=">>")
 async def on_ready():
     print('Logged in as '+client.user.name+' (ID:'+client.user.id+') | Connected to '+str(len(client.servers))+' servers | Connected to '+str(len(set(client.get_all_members())))+' users github.com/marios8543/PBot/')
     await client.change_presence(game=discord.Game(name="DON'T type >>help"))
+    modules = os.listdir('modules')
+    modules = ' ,'.join(map(str, modules))
+    print(modules)
+    for server in client.servers:
+        channel = client.get_channel(e_channels[server.id])
+        message ='''.
+        ***>PBot 1.0***
+
+        Made with :heart: by Uwumin (tzatzikiweeb#7687)
+        https://github.com/marios8543/PBot
+
+        >Implying we can programming
+        https://discord.gg/XACSrhZ
+
+        -----------------------Diagnostics----------------------
+
+        Logged in as %s (ID:%s)
+
+        Serving %s servers and %s users
+
+        MySQL connection: %s
+
+        MySQL version: %s
+        ''' %(str(client.user.name),str(client.user.id),str(len(client.servers)),str(len(set(client.get_all_members()))),str(conn.is_connected()),str(conn.get_server_info().decode("utf-8")))
+        await client.send_message(channel,message)
 
 
 #Server join event
