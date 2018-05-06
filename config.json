@@ -1,0 +1,18 @@
+{
+  "join_msg": "Hey I'm >PBot. Thanks for inviting me to your server...\n\n        Made with :heart: by Uwumin (tzatzikiweeb#7687)\n        https://github.com/marios8543/PBot\n\n        >Implying we can programming\n        https://discord.gg/XACSrhZ\n                                     ",
+  "token": "",
+  "mysql_address":"127.0.0.1",
+  "mysql_user":"root",
+  "mysql_password":"",
+  "mysql_database":"pbot",
+  "warn_whitelist":[],
+  "logging_blacklist":[],
+  "max_softban":"60",
+  "default_entrytext":"Greetings, **{member_name}**. Welcome to ***{server_name}***. Enjoy your stay !",
+  "default_entrytextpm":"Hey {member_name}. Welcome to {server_name}. This is a sample text. Click on :thumbsup: to gain access.",
+  "default_goodbye":"A'ight farewell **{}**...",
+  "url":"www.test_url.com",
+  "default_error":":negative_squared_cross_mark: Oops something went wrong. Try again later...",
+  "error_permissions":":negative_squared_cross_mark: You need to have the `{}` permission to use this",
+  "debug":"false"
+}
