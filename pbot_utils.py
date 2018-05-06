@@ -209,7 +209,7 @@ class Utils():
         result.goodbye_channel,
         result.event_channel,
         result.log_channel,
-        json.loads(result.log_active),
+        json.loads(result.log_active.decode("utf-8"),
         log_whitelist,
         result.entry_text,
         result.entry_text_pm,
@@ -220,9 +220,4 @@ class Utils():
     def make_server(id=0):
         server = Server(id=id)
         db.insert(table='servers',values={'id':id})
-        return server
-
-    def delete_server(id):
-        db.delete(table='servers',params={'id':id})
-        db.delete(table='members',params={'server_id':id})
-        db.delete(table='warnings',params={'server_id':id})  
+        return server 
