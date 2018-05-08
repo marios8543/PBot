@@ -47,5 +47,10 @@ Second rewrite of >PBot. Still not as good as I'd like but it's definitely bette
   Gets the current venezuelan bolivar price
   - emoji *emoji*  
   Gives an enlarged image/download link for an emoji
-
+  - vote
+  Creates a poll users can vote on. Instructions in command.
+  - crypto *coin*
+  Gets the price of a coin in USD and EUR. Supported coins: BTC,ETH,BCH,ZEC,DCR,DASH,LTC,XRP,ETC,DOGE. More to be added soon...
+  
+  
 More coming soon...
