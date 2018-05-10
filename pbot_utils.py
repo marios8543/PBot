@@ -20,10 +20,14 @@ conn = mysql.connector.connect(user=config['mysql_user'], password=config['mysql
 db = conn.cursor(buffered=True)
 client = Bot(description="pbot_public", command_prefix=">>")
 db = make_orm(db=db,conn=conn)
-
-#Global white/black lists
 warn_whitelist = config['warn_whitelist']
-logging_blacklist = config['logging_blacklist']
+logging_blacklist = []
+
+@client.event
+async def on_ready():
+    logging_blacklist.append(config['logging_blacklist'])
+    logging_blacklist.append(client.user.id)
+    print('Logged in as '+client.user.name+' (ID:'+client.user.id+') | Connected to '+str(len(client.servers))+' servers | Connected to '+str(len(set(client.get_all_members())))+' users')
 
 def timestamp():
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -89,7 +93,7 @@ class Server():
     goodbye_text = ""
     max_warnings = 0
 
-    def __init__(self,id=0,added_on=0,welcome_channel=0,goodbye_channel=0,event_channel=0,log_channel=0,log_active=0,log_whitelist=0,entry_text=0,entry_text_pm=0,goodbye_text=0,max_warnings=0):
+    def __init__(self,id=0,added_on=0,welcome_channel=0,goodbye_channel=0,event_channel=0,log_channel=0,log_active=0,log_whitelist=0,entry_text=0,entry_text_pm=0,goodbye_text=0,max_warnings=0,votekick=0):
         self.id = id
         self.added_on = added_on
         self.entry_text = entry_text
@@ -209,7 +213,7 @@ class Utils():
         result.goodbye_channel,
         result.event_channel,
         result.log_channel,
-        json.loads(result.log_active.decode("utf-8"),
+        json.loads(result.log_active),
         log_whitelist,
         result.entry_text,
         result.entry_text_pm,

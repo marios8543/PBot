@@ -11,7 +11,6 @@ async def msg(ctx):
     if Utils.check_perms_ctx(ctx,'manage_channels'):
         server = Utils.get_server(ctx.message.server.id)
         res = server.toggle_logging_msg()
-        print(res)
         if res==1:
             await client.say(":white_check_mark: Message change logging is now on")
             return
@@ -50,6 +49,8 @@ async def on_message_delete(message):
         whitelist = []    
     logging_whitelist = logging_blacklist + whitelist
     if srv.log_active['msg'] and str(message.author.id) not in logging_whitelist:
+        if message.embeds:
+            message.content = 'Cannot display embed here...'
         embed=discord.Embed(title=":exclamation: Deleted message", color=0xff0000)
         embed.add_field(name="Message author", value=str(message.author.name), inline=False)
         embed.add_field(name="Channel", value=str(message.channel.name), inline=False)
@@ -67,6 +68,9 @@ async def on_message_edit(before, after):
         whitelist = []    
     logging_whitelist = logging_blacklist + whitelist
     if srv.log_active['msg'] and str(before.author.id) not in logging_whitelist:
+        if before.embeds or before.embeds:
+            before.content = 'Cannot display embed here...'
+            after.content = 'Cannot display embed here...'      
         embed=discord.Embed(title=":exclamation: Edited message", color=0xf4a142)
         embed.add_field(name="Message author", value=str(before.author.name+'#'+before.author.discriminator), inline=False)
         embed.add_field(name="Channel", value=str(before.channel.name))

@@ -8,10 +8,6 @@ for module in os.listdir(os.path.join(os.path.dirname(__file__),'modules')):
     __import__('modules.'+module[:-3],fromlist='*')
 del module
 print('Imports complete. Logging in...')
-@client.event
-async def on_ready():
-    print('Logged in as '+client.user.name+' (ID:'+client.user.id+') | Connected to '+str(len(client.servers))+' servers | Connected to '+str(len(set(client.get_all_members())))+' users')
-
 
 if __name__=='__main__' and config['debug']=="false":
     client.run(config['token'])
