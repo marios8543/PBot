@@ -34,6 +34,7 @@ class Vote():
                 })
             self.duration = duration
         if votetype==1:
+            self.options.clear()
             self.id = ctx.message.id
             self.user = ctx.message.author
             self.channel = ctx.message.channel
@@ -49,7 +50,7 @@ class Vote():
                 'option':'No',
                 'votes':[]
             })
-            self.duration = 5
+            self.duration = 300
 
     async def make_embed(self,send=1):
         embed = discord.Embed(title=self.question)
