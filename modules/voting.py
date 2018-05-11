@@ -202,11 +202,11 @@ async def kick(ctx):
         await client.delete_message(msg)
         winner = vote.get_winner(make_embed=0)        
         embed = vote.get_winner(make_embed=1)
-        if winner==1:
+        if winner==0:
             await client.say(embed=embed)
             await client.send_message(vote.target,':exclamation: You have been kicked because you have been voted off')
-            await client.send_message(vote.target,embed)
-            await ctx.message.server.kick(vote.target)
+            await client.send_message(vote.target,embed=embed)
+            await client.kick(vote.target)
         else:
             await client.say(embed=embed)
     else:
