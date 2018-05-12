@@ -6,7 +6,7 @@ votes_running = {}
 def vote_running(ctx):
     for vote in votes_running:
         if votes_running[vote].channel is ctx.message.channel:
-            return 1
+            return votes_running[vote]
     
 class Vote():
     id = ""
@@ -18,6 +18,7 @@ class Vote():
     embed = 0
     embed_obj = 0
     target = 0
+    running = 1
 
     def __init__(self,ctx,question=0,options=0,duration=0,votetype=0,target=0):
         if votetype==0:
@@ -115,15 +116,19 @@ class Vote():
             embed.add_field(name=option['option'],value=str(len(option['votes']))+' votes')
         embed.set_footer(text='Vote called by '+self.user.name+'#'+self.user.discriminator)
         votes_running.pop(self.embed.id,None)
-        return embed   
+        return embed
+
+    def kill(self):
+        self.running=0
+        return 1   
 
 
 
 @client.group(pass_context=True)
-async def vote(ctx):
-    if vote_running(ctx):
-        return await client.say(':negative_squared_cross_mark: You can only have one vote running per channel')    
-    if ctx.invoked_subcommand is None:    
+async def vote(ctx):    
+    if ctx.invoked_subcommand is None:
+        if vote_running(ctx):
+            return await client.say(':negative_squared_cross_mark: You can only have one vote running per channel')            
         question = ""
         options = []
         duration = 0
@@ -145,7 +150,7 @@ async def vote(ctx):
         await client.say(':pencil: Ok finally how long do you want your vote to last. Type just the number in seconds. Max is {} minutes'.format(config['max_softban']))
         msg = await client.wait_for_message(timeout=60,author=ctx.message.author,channel=ctx.message.channel)
         if msg:
-            duration = int(msg.content)
+            duration = int(''.join(filter(str.isdigit, msg.content)))
             if duration>int(config['max_softban'])*60:
                 return await client.say(':negative_squared_cross_mark: Max vote time is {} minutes'.format(config['max_softban']))
         else:
@@ -159,6 +164,11 @@ async def vote(ctx):
         #Timer implementation (rewrite pending)
         elapsed = 0
         while vote.duration-1>=elapsed:
+            if vote.running!=1:
+                await client.delete_message(msg)        
+                winner = vote.get_winner(make_embed=1)
+                await client.say(embed=winner)    
+                return await client.say(':anger: Vote has been canceled')
             await asyncio.sleep(1)
             elapsed = elapsed+1
             remaining = vote.duration-elapsed
@@ -189,6 +199,8 @@ async def kick(ctx):
             await client.add_reaction(msg,emoji_unicode[option['emoji']])        
         elapsed = 0
         while vote.duration-1>=elapsed:
+            if vote.running!=1:
+                return await client.say(':anger: Vote has been canceled')
             await asyncio.sleep(1)
             elapsed = elapsed+1
             remaining = vote.duration-elapsed
@@ -214,7 +226,16 @@ async def kick(ctx):
         await client.say(':negative_squared_cross_mark: Vote-kicking is disabled in this server...')    
     return 1      
 
-        
+
+@vote.command(pass_context=True)
+async def kill(ctx):
+    vote = vote_running(ctx)
+    user = ctx.message.author
+    if vote.user==user.id or Utils.check_perms_ctx(ctx,'manage_messages'):
+        vote.kill()
+    else:
+        await client.say(':negative_squared_cross_mark: Only the vote creator or people with the `Manage Messages` permission can use this.')    
+
 
 
 @client.event
