@@ -229,6 +229,8 @@ async def kick(ctx):
 
 @vote.command(pass_context=True)
 async def kill(ctx):
+    if not vote_running(ctx):
+        return await client.say(':negative_squared_cross_mark: No vote running')
     vote = vote_running(ctx)
     user = ctx.message.author
     if vote.user==user.id or Utils.check_perms_ctx(ctx,'manage_messages'):
