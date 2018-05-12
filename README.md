@@ -49,6 +49,8 @@ Second rewrite of >PBot. Still not as good as I'd like but it's definitely bette
   Gives an enlarged image/download link for an emoji
   - vote
   Creates a poll users can vote on. Instructions in command.
+    - vote kick *tag* Vote-kicks the user. Duration is 5 minutes and can't be changed.
+    - vote kill Cancels the vote running in that channel. Only the vote creator and people with the Manage Messages permission use this.
   - crypto *coin*
   Gets the price of a coin in USD and EUR. Supported coins: BTC,ETH,BCH,ZEC,DCR,DASH,LTC,XRP,ETC,DOGE. More to be added soon...
   
