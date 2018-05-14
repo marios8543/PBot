@@ -213,7 +213,7 @@ class Utils():
         result.goodbye_channel,
         result.event_channel,
         result.log_channel,
-        json.loads(result.log_active.decode("utf-8"),
+        json.loads(result.log_active.decode("utf-8")),
         log_whitelist,
         result.entry_text,
         result.entry_text_pm,
