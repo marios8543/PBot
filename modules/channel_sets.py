@@ -4,9 +4,9 @@ from pbot_utils import *
 @client.command(pass_context=True)
 async def setwelcome(ctx):
     if Utils.check_perms_ctx(ctx,'manage_channels'):
-        server = Utils.get_server(ctx.message.channel.server.id)
+        server = await Utils.get_server(ctx.message.channel.server.id)
         server.welcome_channel = ctx.message.channel.id
-        if server.update():
+        if await server.update():
             await client.say(":white_check_mark: OK I'll log new members here")
         else:
             await client.say(config['default_error'])    
@@ -17,9 +17,9 @@ async def setwelcome(ctx):
 @client.command(pass_context=True)
 async def setgoodbye(ctx):
     if Utils.check_perms_ctx(ctx,'manage_channels'):
-        server = Utils.get_server(ctx.message.channel.server.id)
+        server = await Utils.get_server(ctx.message.channel.server.id)
         server.goodbye_channel = ctx.message.channel.id
-        if server.update():
+        if await server.update():
             await client.say(":white_check_mark: OK I'll see leaving members off here")
         else:
             await client.say(config['default_error'])    
@@ -30,9 +30,9 @@ async def setgoodbye(ctx):
 @client.command(pass_context=True)
 async def setevent(ctx):
     if Utils.check_perms_ctx(ctx,'manage_channels'):
-        server = Utils.get_server(ctx.message.channel.server.id)
+        server = await Utils.get_server(ctx.message.channel.server.id)
         server.event_channel = ctx.message.channel.id
-        if server.update():
+        if await server.update():
             await client.say(":white_check_mark: OK I'll show events here")
         else:
             await client.say(config['default_error'])    
@@ -44,9 +44,9 @@ async def setevent(ctx):
 @client.command(pass_context=True)
 async def setlogging(ctx):
     if Utils.check_perms_ctx(ctx,'manage_channels'):
-        server = Utils.get_server(ctx.message.channel.server.id)
+        server = await Utils.get_server(ctx.message.channel.server.id)
         server.log_channel = ctx.message.channel.id
-        if server.update():
+        if await server.update():
             await client.say(":white_check_mark: OK I'll log stuff here")
         else:
             await client.say(config['default_error'])    

@@ -1,3 +1,6 @@
+import asyncio
+import aiomysql
+
 def normalize(s):
 	if type(s)==bytes:
 		s = s.decode("utf-8")
@@ -14,9 +17,18 @@ class Result():
 			dicc[prop]=value
 		return dicc
 
+async def connect(host=None,username=None,password=None,database=None):
+	conn = await aiomysql.connect(host=host, port=3306,user=username, password=password, db=database)
+	db = await conn.cursor()
+	return {'conn':conn,'db':db}
+
 class ORM():
 
-	def select(self,table='',fields='*',params=''):
+	def __init__(self,db,conn):
+		self.db = db
+		self.conn = conn
+
+	async def select(self,table='',fields='*',params=''):
 		if table=='':
 			return
 		if fields=='*':
@@ -38,16 +50,16 @@ class ORM():
 		params_str='WHERE '+params_str[:-3]		
 		sql = "SELECT {fields_str} FROM {table} {params_str}".format(**{'fields_str':fields_str,'table':table,'params_str':params_str})
 		#print(sql)
-		self.db.execute(sql,params_arr)
+		await self.db.execute(sql,params_arr)
 		result = Result()
-		resp = self.db.fetchone()
+		resp = await self.db.fetchone()
 		for idx,res in enumerate(resp):
 			if type(res) == bytes:
 				res = res.decode("utf-8")
 			setattr(result, fields[idx], res)
 		return result
 
-	def selectmany(self,table='',fields='*',params=''):
+	async def selectmany(self,table='',fields='*',params=''):
 		if table=='':
 			return
 		if fields=='*':
@@ -69,8 +81,8 @@ class ORM():
 		params_str=params_str[:-3]		
 		sql = "SELECT {fields_str} FROM {table} {params_str}".format(**{'fields_str':fields_str,'table':table,'params_str':params_str})
 		#print(sql)
-		self.db.execute(sql,params_arr)
-		resp = self.db.fetchall()
+		await self.db.execute(sql,params_arr)
+		resp = await self.db.fetchall()
 		arr = []
 		#print(resp)
 		for res in resp:
@@ -80,12 +92,9 @@ class ORM():
 					res = res.decode("utf-8")
 				setattr(result, fields[idx], res[0])
 			arr.append(result)
-		return arr	
+		return arr			
 
-							
-		return result		
-
-	def insert(self,table="",values={}):
+	async def insert(self,table="",values={}):
 		if table=='':
 			return
 		value_str = []
@@ -98,11 +107,11 @@ class ORM():
 		value_str = ",".join(value_str)
 		prcnt_str = ",".join(prcnt_str)
 		sql = "INSERT INTO {table}({value_str}) values({prcnt_str})".format(**{'table':table,'value_str':value_str,'prcnt_str':prcnt_str})
-		if self.db.execute(sql,value_arr):
+		if await self.db.execute(sql,value_arr):
 			self.conn.commit()
 			return 1
 
-	def update(self,table="",values={},params={}):
+	async def update(self,table="",values={},params={}):
 		if table=='':
 			return
 		if type(values)==dict:
@@ -132,10 +141,10 @@ class ORM():
 		params_str = params_str[:-3]
 		sql = "UPDATE {table} SET {value_str} WHERE {params_str}".format(**{'table':table,'value_str':value_str,'params_str':params_str})
 		#print(sql)
-		self.db.execute(sql,(value_arr+param_arr))
+		await self.db.execute(sql,(value_arr+param_arr))
 		return 1
 
-	def delete(self,table='',values='',params={}):
+	async def delete(self,table='',values='',params={}):
 		if table=='':
 			return
 		if isinstance(values,list):
@@ -145,16 +154,5 @@ class ORM():
 			params_str = params_str+" {key}={value} AND".format(**{'key':param,'value':params[param]})
 		params_str = params_str[:-3]
 		sql = "DELETE {values} FROM {table} WHERE {params_str}".format(**{'values':values,'table':table,'params_str':params_str})
-		self.db.execute(sql)
+		await self.db.execute(sql)
 		return 1	
-
-						
-
-
-
-
-def make_orm(db=0,conn=0):
-	orm = ORM()
-	orm.db = db
-	orm.conn = conn
-	return orm		

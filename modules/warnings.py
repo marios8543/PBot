@@ -5,16 +5,15 @@ from pbot_utils import *
 @client.command(pass_context=True)
 async def warn(ctx,user,reason):
     server = ctx.message.server
-    srv = Utils.get_server(server.id)
-    member2 = ctx.message.author
+    srv = await Utils.get_server(server.id)
     if Utils.check_perms_ctx(ctx,'ban_members'):
         if not ctx.message.raw_mentions:
             user_id = user
         else:
             user_id = ''.join(ctx.message.raw_mentions)
-        warnman = srv.get_member(user_id)
+        warnman = await srv.get_member(user_id)
         if str(user_id) not in warn_whitelist:
-            if warnman.warn()==1:
+            if await warnman.warn()==1:
                 await client.say(':exclamation: <@!'+str(user_id)+'> has been warned. His warning count is now '+str(warnman.warnings+1)+' ('+str(int(srv.max_warnings)-int(warnman.warnings) -1)+' warns left)')
                 embed=discord.Embed(title=":exclamation: User Warned", color=0xed00f9)
                 embed.add_field(name="User warned", value=warnman.name, inline=False)
@@ -23,7 +22,7 @@ async def warn(ctx,user,reason):
                 embed.add_field(name="Warning count", value=str(warns+1)+' ('+str(int(max_warns)-int(warns) -1)+' warns left)', inline=False)
                 embed.set_footer(text=str(timestamp()))
                 await client.send_message(client.get_channel(srv.log_channel),embed=embed)
-            elif warnman.warn()==2:
+            elif await warnman.warn()==2:
                 member2server = server.get_member(user_id)
                 msg = await client.say(':exclamation: User has {} warnings and will be banned! Click on :white_check_mark: to confirm...'.format(warnman.warnings))
                 await client.add_reaction(msg,'👍')
@@ -45,9 +44,10 @@ async def clearwarnings(ctx,arg):
     server = ctx.message.server
     if Utils.check_perms_ctx(ctx,'ban_members'):
         user_id = ''.join(ctx.message.raw_mentions)
-        usr = Utils.get_server(ctx.message.server.id).get_member(user_id)
+        usr = await Utils.get_server(ctx.message.server.id)
+        usr = await usr.get_member(user_id)
         usr.warnings = 0
-        if usr.update():
+        if await usr.update():
             await client.say(':white_check_mark: <@!'+user_id+'> is now clear!')
         else:
             await client.say(config['default_error'])    
@@ -59,7 +59,7 @@ async def clearwarnings(ctx,arg):
 async def softban(ctx,arg,arg2):
     if Utils.check_perms_ctx(ctx,'kick_members'):
         if int(arg2) <= int(config['max_softban']):
-            unverified = discord.Utils.get(server.roles, name="Unverified")
+            unverified = discord.Utils.get(ctx.message.server.roles, name="Unverified")
             if not ctx.message.raw_mentions:
                 user_id = arg
             else:
