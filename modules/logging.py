@@ -9,8 +9,8 @@ async def logging(ctx):
 @logging.command(pass_context=True)
 async def msg(ctx):
     if Utils.check_perms_ctx(ctx,'manage_channels'):
-        server = Utils.get_server(ctx.message.server.id)
-        res = server.toggle_logging_msg()
+        server = await Utils.get_server(ctx.message.server.id)
+        res = await server.toggle_logging_msg()
         if res==1:
             await client.say(":white_check_mark: Message change logging is now on")
             return
@@ -25,8 +25,8 @@ async def msg(ctx):
 @logging.command(pass_context=True)
 async def name(ctx):
     if Utils.check_perms_ctx(ctx,'manage_channels'):
-        server = Utils.get_server(ctx.message.server.id)
-        res = server.toggle_logging_name()
+        server = await Utils.get_server(ctx.message.server.id)
+        res = await server.toggle_logging_name()
         if res==1:
             await client.say(":white_check_mark: Name logging is now on")
             return
@@ -42,7 +42,7 @@ async def name(ctx):
 #Message delete event
 @client.event
 async def on_message_delete(message):
-    srv = Utils.get_server(message.server.id)
+    srv = await Utils.get_server(message.server.id)
     if type(srv.log_whitelist)==list:
         whitelist=srv.log_whitelist
     else:
@@ -61,7 +61,7 @@ async def on_message_delete(message):
 #Message edit
 @client.event
 async def on_message_edit(before, after):
-    srv = Utils.get_server(before.server.id)
+    srv = await Utils.get_server(before.server.id)
     if type(srv.log_whitelist)==list:
         whitelist=srv.log_whitelist
     else:
@@ -81,8 +81,9 @@ async def on_message_edit(before, after):
 
 @client.event
 async def on_member_update(before, after):
-    srv = Utils.get_server(before.server.id)
     old_name = before.name
     new_name = after.name
-    if srv.log_active['name'] and old_name != after.name:
-        await client.send_message(client.get_channel(str(srv.event_channel)), ':anger: <@!'+before.id+'> changed their name from **'+old_name+'** to **'+after.name+'**')     
+    if old_name != after.name:
+        srv = await Utils.get_server(before.server.id)
+        if srv.log_active['name']:
+            return await client.send_message(client.get_channel(str(srv.event_channel)), ':anger: <@!'+before.id+'> changed their name from **'+old_name+'** to **'+after.name+'**')     

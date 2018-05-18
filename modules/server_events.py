@@ -1,21 +1,22 @@
 from pbot_utils import *
+import random
 
 #Server join event
 @client.event
 async def on_server_join(server):
-    print('Joined guild '+server.name+' with ID '+str(server.id))
     for channel in server.channels:
         if 'general' in channel.name:
             destination = channel
-            print(destination.id)
             break
-    srv = Utils.make_server(id=server.id)
+    if not destination:
+        destination = random.choice(server.channels)        
+    srv = await Utils.make_server(id=server.id)
     await client.send_message(destination,config['join_msg'])
     await client.send_message(destination,"I'll now log all the members in this server to make my work easier...")
     await client.send_typing(destination)
     member_count = 0
     for member in server.members:
-        if srv.make_member(member.id,verified=1):
+        if await srv.make_member(member.id,verified=1):
             member_count = member_count+1
         else:
             await client.send_message(destination,'Could not add member {} (ID:{})'.format(member.name,member.id))
@@ -26,5 +27,4 @@ async def on_server_join(server):
 #Server leave event
 @client.event
 async def on_server_remove(server):
-    print(str(timestamp())+' Left guild '+server.name+' with ID '+str(server.id))
-    Utils.delete_server(server.id)
+    await Utils.delete_server(server.id)

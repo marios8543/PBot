@@ -5,8 +5,8 @@ from pbot_utils import *
 async def check(ctx, arg):
     if Utils.check_perms_ctx(ctx,'ban_members'):
         user_id = ''.join(ctx.message.raw_mentions)
-        srv = Utils.get_server(ctx.message.server.id)
-        usr = srv.get_member(user_id)
+        srv = await Utils.get_server(ctx.message.server.id)
+        usr = await srv.get_member(user_id)
         join_date = usr.join_date
         top_role = ctx.message.server.get_member(user_id).top_role
         embed = discord.Embed(title=':mag: >PBot User Lookup', color=0xc242f4)
@@ -29,10 +29,9 @@ async def check(ctx, arg):
         await asyncio.sleep(1)
         res = await client.wait_for_reaction(['\U000026a0','\U0000270b','\U0001f6b9'],message=msg)
         if res.reaction.emoji == '\U000026a0':
-            member2 = ctx.message.author
             warnman = usr
             if str(user_id) not in warn_whitelist:
-                if warnman.warn()==1:
+                if await warnman.warn()==1:
                     await client.say(':exclamation: <@!'+str(user_id)+'> has been warned. His warning count is now '+str(warnman.warnings+1)+' ('+str(int(srv.max_warnings)-int(warnman.warnings) -1)+' warns left)')
                     embed=discord.Embed(title=":exclamation: User Warned", color=0xed00f9)
                     embed.add_field(name="User warned", value=warnman.name, inline=False)
@@ -41,7 +40,7 @@ async def check(ctx, arg):
                     embed.add_field(name="Warning count", value=str(usr.warnings+1)+' ('+str(int(srv.max_warnings)-int(usr.warnings) -1)+' warns left)', inline=False)
                     embed.set_footer(text=str(timestamp()))
                     await client.send_message(client.get_channel(srv.log_channel),embed=embed)
-                elif warnman.warn()==2:
+                elif await warnman.warn()==2:
                     member2server = server.get_member(user_id)
                     msg = await client.send_message(ctx,message.author,':exclamation: User has {} warnings and will be banned! Click on :white_check_mark: to confirm...'.format(warnman.warnings))
                     await client.add_reaction(msg,'👍')
@@ -65,7 +64,7 @@ async def check(ctx, arg):
             await client.say('<@!'+str(user_id)+'> is here again!')
         if res.reaction.emoji == '\U0001f6b9':
             usr.warnings = 0
-            if usr.update():
+            if await usr.update():
                 await client.send_message(ctx.message.author,':white_check_mark: <@!'+user_id+'> is now clear!')
             else:
                 await client.send_message(ctx.message.author,config['default_error'])    
@@ -89,7 +88,7 @@ async def dashboard(ctx):
     if Utils.check_perms_ctx(ctx,'manage_server'):
         id = Utils.random(16)
         token = Utils.make_hash(timestamp(),id,ctx.message.server.id)
-        db.insert(table='setting_sessions',values={'id':id,'token':token,'server_id':ctx.message.server.id,'admin_id':ctx.message.author.id})
+        await db.insert(table='setting_sessions',values={'id':id,'token':token,'server_id':ctx.message.server.id,'admin_id':ctx.message.author.id})
         embed = discord.Embed(Title="set_session")
         embed.set_author(name=">PBot Dashboard Session",icon_url="https://raw.githubusercontent.com/marios8543/Implying_Pbot/master/kamina.png")
         embed.add_field(name="Click here to go to settings",value=config['url']+"/session.php?token="+token)
@@ -102,13 +101,13 @@ async def dashboard(ctx):
 
 @client.command(pass_context=True)
 async def verify(ctx,arg):
-    server = Utils.get_server(ctx.message.server.id)
+    server = await Utils.get_server(ctx.message.server.id)
     if Utils.check_perms_ctx(ctx,'kick_members'):
         unverified = discord.utils.get(server.disc_server.roles, name="Unverified")
         user_id = ''.join(ctx.message.raw_mentions)
-        usr = server.get_member(user_id)
+        usr = await server.get_member(user_id)
         usr.verified = 1
-        if usr.update():
+        if await usr.update():
             await client.remove_roles(usr.disc_user, unverified)
             await client.say(':white_check_mark: Manually verified <@!'+str(user_id)+'> !')    
         else:
