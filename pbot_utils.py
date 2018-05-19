@@ -205,45 +205,6 @@ class Utils():
         user = server.get_member(ctx.message.author.id)
         return getattr(user.server_permissions,perm)
         
-    def get_server(id):
-        result = db.select(table='servers',fields=[
-        'added_on','entry_text','entry_text_pm','goodbye_text',
-        'log_whitelist','welcome_channel','goodbye_channel','event_channel',
-        'log_channel','log_active','max_warns'],params={'id':id})
-        id = str(id)
-        if result.log_whitelist:
-            log_whitelist = json.loads(result.log_whitelist)
-        else:
-            log_whitelist=0
-        if result.entry_text==None:
-            result.entry_text = config['default_entrytext']
-        if result.entry_text_pm==None:
-            result.entry_text_pm = config['default_entrytextpm']
-        if result.goodbye_text==None:
-            result.goodbye_text = config['default_goodbye']              
-        server = Server(id,
-        result.added_on,
-        result.welcome_channel,
-        result.goodbye_channel,
-        result.event_channel,
-        result.log_channel,
-        json.loads(result.log_active.decode("utf-8")),
-        log_whitelist,
-        result.entry_text,
-        result.entry_text_pm,
-        result.goodbye_text,
-        int(result.max_warns))
-        return server
-
-    def make_server(id=0):
-        server = Server(id=id)
-        db.insert(table='servers',values={'id':id})
-        return server
-                        
-    def delete_server(id):
-        db.delete(table='servers',params={'id':id})
-        db.delete(table='members',params={'server_id':id})
-        
     async def make_server(id=0):
         await db.insert(table='servers',values={'id':id})
         return await Utils.get_server(id)
