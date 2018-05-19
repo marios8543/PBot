@@ -53,6 +53,8 @@ Second rewrite of >PBot. Still not as good as I'd like but it's definitely bette
     - vote kill Cancels the vote running in that channel. Only the vote creator and people with the Manage Messages permission use this.
   - crypto *coin*
   Gets the price of a coin in USD and EUR. Supported coins: BTC,ETH,BCH,ZEC,DCR,DASH,LTC,XRP,ETC,DOGE. More to be added soon...
+  - rule34 *tag*
+  Gets an image from rule34.xxx based on the tag given.
   
   
 More coming soon...

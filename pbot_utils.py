@@ -6,11 +6,9 @@ from discord.ext.commands import Bot
 from discord.ext import commands
 import unicodedata
 from datetime import datetime
-import mysql.connector
 from random import randint
 import hashlib
 import pbot_orm
-from urllib.request import urlopen
 
 #Parse config
 with open("config.json","r+") as config:
