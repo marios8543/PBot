@@ -1,5 +1,6 @@
 # PBot
 Second rewrite of >PBot. Still not as good as I'd like but it's definitely better than the original and it will make supporting it in the long term easier because of the modular design and the ORM...
+If you want to use >PBot you can use this [invite link](https://discordapp.com/api/oauth2/authorize?client_id=381066546535202816&permissions=8&scope=bot) instead of hosting your own instance...
 
 ## Features:
 - Default prefix: ">>"
