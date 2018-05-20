@@ -61,7 +61,19 @@ async def rule34(ctx,tag):
         embed.set_footer(text='Created at {}/{}/{}'.format(stm[2],strptime(stm[1],'%b').tm_mon,stm[-1]))
         return await client.say(embed=embed)
 
-
-
-
-
+@client.command(pass_context=True)
+async def hastebin(ctx):
+    await client.say(':pencil: Enter your paste in a triple-backtick code-block or type `cancel` to cancel.')
+    msg = await client.wait_for_message(timeout=300,author=ctx.message.author,channel=ctx.message.channel)
+    if msg.content == 'cancel':
+        return await client.say(':x: Cancelled...')
+    if msg == None:
+        return await client.say(':zzz: Timed out...') 
+    msg_txt = msg.content[3:-3]
+    async with session.post("https://hastebin.com/documents",data=msg_txt.encode('utf-8')) as post:
+        post = await post.json()
+        url = "https://hastebin.com/{}".format(post['key']) 
+    embed = discord.Embed(title="Paste created successfully!",color=0x424ef4)
+    embed.set_author(name=url,url=url)
+    await client.say(embed=embed)
+    return await client.delete_message(msg)

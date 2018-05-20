@@ -55,6 +55,8 @@ Second rewrite of >PBot. Still not as good as I'd like but it's definitely bette
   Gets the price of a coin in USD and EUR. Supported coins: BTC,ETH,BCH,ZEC,DCR,DASH,LTC,XRP,ETC,DOGE. More to be added soon...
   - rule34 *tag*
   Gets an image from rule34.xxx based on the tag given.
+  - hastebin
+  Creates a paste on hastebin.com
   
   
 More coming soon...
