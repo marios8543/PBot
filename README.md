@@ -58,6 +58,10 @@ If you want to use >PBot you can use this [invite link](https://discordapp.com/a
   Gets an image from rule34.xxx based on the tag given.
   - hastebin
   Creates a paste on hastebin.com
+
+- Anime Commands:
+  - anime search *query* Searches for the anime with the query specified
+  - anime top *upcoming*,*tv*,*movie*,*airing*,*ova*,*special*
   
   
 More coming soon...
