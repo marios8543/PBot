@@ -62,6 +62,6 @@ If you want to use >PBot you can use this [invite link](https://discordapp.com/a
 - Anime Commands:
   - anime search *query* Searches for the anime with the query specified
   - anime top *upcoming*,*tv*,*movie*,*airing*,*ova*,*special*
-  
+  - anime character *query* Searches for the anime character with the query specified
   
 More coming soon...

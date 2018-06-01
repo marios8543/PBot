@@ -15,7 +15,7 @@ async def bsf():
         embed.set_author(name='Venezuelan Bolivar',icon_url='https://cdn.urgente24.com/sites/default/files/notas/2015/05/29/maduro-risa-425x318.jpg')
         embed.add_field(name='1USD is...', value=str(price)+' Bs.F')
         embed.set_footer(text="This isn't real socialism")
-        await client.say(embed=embed)
+        return await client.say(embed=embed)
 
 
 @client.command()
@@ -31,7 +31,7 @@ async def emoji(emoji):
             url = emoji.url
             print(url)
             embed.set_image(url=url)
-            await client.say(embed=embed)
+            return await client.say(embed=embed)
 
 @client.command()
 async def ping():
@@ -40,7 +40,7 @@ async def ping():
     msg_time = msg.timestamp
     result = timestamp - msg_time
     result = result.total_seconds()
-    await client.edit_message(msg,'I work!!! `'+str(abs(result))[:-3]+'sec`')
+    return await client.edit_message(msg,'I work!!! `'+str(abs(result))[:-3]+'sec`')
 
 @client.command(pass_context=True)
 async def rule34(ctx,tag):
@@ -77,3 +77,19 @@ async def hastebin(ctx):
     embed.set_author(name=url,url=url)
     await client.say(embed=embed)
     return await client.delete_message(msg)
+
+@client.command()
+async def shibe():
+	async with session.get("http://shibe.online/api/shibes?count=10&urls=true&httpsUrls=false") as shibe:
+		shibe = await shibe.json()
+		embed = discord.Embed(title="Shibeeee")
+		embed.set_image(url=random.choice(shibe))
+		return await client.say(embed=embed)
+
+@client.command()		
+async def cat():
+	async with session.get("https://aws.random.cat/meow") as cat:
+		cat = await cat.json()
+		embed = discord.Embed(title="Catoooo")
+		embed.set_image(url=cat['file'])
+		return await client.say(embed=embed)

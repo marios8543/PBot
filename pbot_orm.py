@@ -42,12 +42,13 @@ class ORM():
 				if type(param) == int:
 					param = str(param)
 				params_str = params_str+' {key}=%s AND'.format(**{'key':param})
-				params_arr.append(params[param])					
+				params_arr.append(params[param])
+			params_str='WHERE '+params_str[:-3]						
 		elif params=='':
 			params_str = ""
+			params_arr = []
 		else:
-			return
-		params_str='WHERE '+params_str[:-3]		
+			return	
 		sql = "SELECT {fields_str} FROM {table} {params_str}".format(**{'fields_str':fields_str,'table':table,'params_str':params_str})
 		#print(sql)
 		await self.db.execute(sql,params_arr)
@@ -73,21 +74,24 @@ class ORM():
 				if type(param) == int:
 					param = str(param)
 				params_str = params_str+' {key}=%s AND'.format(**{'key':param})
-				params_arr.append(params[param])					
+				params_arr.append(params[param])
+			params_str='WHERE '+params_str[:-3]
+
 		elif params=='':
 			params_str = ""
+			params_arr = []
 		else:
-			return
-		params_str=params_str[:-3]		
+			return		
 		sql = "SELECT {fields_str} FROM {table} {params_str}".format(**{'fields_str':fields_str,'table':table,'params_str':params_str})
 		#print(sql)
 		await self.db.execute(sql,params_arr)
 		resp = await self.db.fetchall()
 		arr = []
-		#print(resp)
+		print(resp)
 		for res in resp:
 			result = Result()
 			for idx,res in enumerate(resp):
+				#print(idx,res)
 				if type(res[0]) == bytes:
 					res = res.decode("utf-8")
 				setattr(result, fields[idx], res[0])
