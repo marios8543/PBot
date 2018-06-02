@@ -54,7 +54,7 @@ async def check(ctx, arg):
             else:
                 await client.send_message(ctx.message.author,':negative_squared_cross_mark: Haha nice try cuck. You cant warn me :^)')
         if res.reaction.emoji == '\U0000270b':
-            unverified = discord.Utils.get(server.roles, name="Unverified")
+            unverified = discord.utils.get(server.roles, name="Unverified")
             user_id = ''.join(ctx.message.raw_mentions)
             time = 5*60
             await client.add_roles(server.get_member(user_id), unverified)

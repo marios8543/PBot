@@ -59,7 +59,7 @@ async def clearwarnings(ctx,arg):
 async def softban(ctx,arg,arg2):
     if Utils.check_perms_ctx(ctx,'kick_members'):
         if int(arg2) <= int(config['max_softban']):
-            unverified = discord.Utils.get(ctx.message.server.roles, name="Unverified")
+            unverified = discord.utils.get(ctx.message.server.roles, name="Unverified")
             if not ctx.message.raw_mentions:
                 user_id = arg
             else:
