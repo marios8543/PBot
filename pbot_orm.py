@@ -112,7 +112,7 @@ class ORM():
 		prcnt_str = ",".join(prcnt_str)
 		sql = "INSERT INTO {table}({value_str}) values({prcnt_str})".format(**{'table':table,'value_str':value_str,'prcnt_str':prcnt_str})
 		if await self.db.execute(sql,value_arr):
-			self.conn.commit()
+			await self.conn.commit()
 			return 1
 
 	async def update(self,table="",values={},params={}):
