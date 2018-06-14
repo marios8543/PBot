@@ -17,8 +17,8 @@ class Result():
 			dicc[prop]=value
 		return dicc
 
-async def connect(host=None,username=None,password=None,database=None):
-	conn = await aiomysql.connect(host=host, port=3306,user=username, password=password, db=database)
+async def connect(host=None,username=None,password=None,database=None,loop=None):
+	conn = await aiomysql.connect(host=host, port=3306,user=username, password=password, db=database, loop=loop)
 	db = await conn.cursor()
 	return {'conn':conn,'db':db}
 
@@ -112,7 +112,7 @@ class ORM():
 		prcnt_str = ",".join(prcnt_str)
 		sql = "INSERT INTO {table}({value_str}) values({prcnt_str})".format(**{'table':table,'value_str':value_str,'prcnt_str':prcnt_str})
 		if await self.db.execute(sql,value_arr):
-			self.conn.commit()
+			await self.conn.commit()
 			return 1
 
 	async def update(self,table="",values={},params={}):
