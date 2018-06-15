@@ -17,8 +17,8 @@ class Result():
 			dicc[prop]=value
 		return dicc
 
-async def connect(host=None,username=None,password=None,database=None):
-	conn = await aiomysql.connect(host=host, port=3306,user=username, password=password, db=database)
+async def connect(host=None,username=None,password=None,database=None,loop=None):
+	conn = await aiomysql.connect(host=host, port=3306,user=username, password=password, db=database, loop=loop)
 	db = await conn.cursor()
 	return {'conn':conn,'db':db}
 

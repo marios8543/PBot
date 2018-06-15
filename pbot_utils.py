@@ -41,7 +41,7 @@ db = pbot_orm.ORM(None,None)
 
 @client.event
 async def on_ready():
-    dicc = await pbot_orm.connect(host=config['mysql_address'],username=config['mysql_user'],password=config['mysql_password'],database=config['mysql_database'])
+    dicc = await pbot_orm.connect(host=config['mysql_address'],username=config['mysql_user'],password=config['mysql_password'],database=config['mysql_database'],loop=client.loop)
     db.db = dicc['db']
     db.conn = dicc['conn']
     await log_members()
