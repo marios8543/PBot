@@ -18,16 +18,33 @@ def timestamp():
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     return timestamp
 
+async def log_members():
+    res = await db.selectmany(table='members',fields=['id','server_id'])
+    res2 = set(client.get_all_members())
+    members = []
+    db_members = []
+    for r in res:
+        db_members.append((r.id,r.server_id))
+    for r in res2:
+        members.append((int(r.id),int(r.server.id)))
+    missing = set(members)-set(db_members)
+    for m in missing:
+        await db.insert(table='members',values={'id':m[0],'server_id':m[1],'verified':1})
+        print('Saved missing member {} (ServerID: {})'.format(m[0],m[1]))
+    return 1
+
 client = Bot(description="pbot_public", command_prefix=">>")
 warn_whitelist = config['warn_whitelist']
 logging_blacklist = []
 db = pbot_orm.ORM(None,None)
+
 
 @client.event
 async def on_ready():
     dicc = await pbot_orm.connect(host=config['mysql_address'],username=config['mysql_user'],password=config['mysql_password'],database=config['mysql_database'])
     db.db = dicc['db']
     db.conn = dicc['conn']
+    await log_members()
     logging_blacklist.append(config['logging_blacklist'])
     logging_blacklist.append(client.user.id)
     print('Logged in as '+client.user.name+' (ID:'+client.user.id+') | Connected to '+str(len(client.servers))+' servers | Connected to '+str(len(set(client.get_all_members())))+' users')
