@@ -87,17 +87,13 @@ async def shibe():
 		embed.set_image(url=random.choice(shibe))
 		return await client.say(embed=embed)
 
-@client.command()		
+@client.command()
 async def cat():
-	async with session.get("https://aws.random.cat/meow") as cat:
-		cat = await cat.json()
-		embed = discord.Embed(title="Catoooo")
-		embed.set_image(url=cat['file'])
-return await client.say(embed=embed)
-    msg_time = msg.timestamp
-    result = timestamp - msg_time
-    result = result.total_seconds()
-    return await client.edit_message(msg,'I work!!! `'+str(abs(result))[:-3]+'sec`')
+    async with session.get("") as cat:
+        cat = await cat.json()
+        embed = discord.Embed(title="Catoooo")
+        embed.set_image(url=cat['file'])
+        return await client.say(embed=embed)
 
 @client.command(pass_context=True)
 async def rule34(ctx,tag):
