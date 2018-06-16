@@ -54,6 +54,8 @@ class ORM():
 		await self.db.execute(sql,params_arr)
 		result = Result()
 		resp = await self.db.fetchone()
+		if resp==None:
+			return
 		for idx,res in enumerate(resp):
 			if type(res) == bytes:
 				res = res.decode("utf-8")
@@ -85,6 +87,8 @@ class ORM():
 		#print(sql)
 		await self.db.execute(sql,params_arr)
 		resp = await self.db.fetchall()
+		if resp==None:
+			return
 		arr = []
 		#print(resp)
 		for res in resp:

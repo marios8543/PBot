@@ -43,6 +43,8 @@ async def name(ctx):
 @client.event
 async def on_message_delete(message):
     srv = await Utils.get_server(message.server.id)
+    if not srv:
+        return    
     if type(srv.log_whitelist)==list:
         whitelist=srv.log_whitelist
     else:
@@ -62,6 +64,8 @@ async def on_message_delete(message):
 @client.event
 async def on_message_edit(before, after):
     srv = await Utils.get_server(before.server.id)
+    if not srv:
+        return
     if type(srv.log_whitelist)==list:
         whitelist=srv.log_whitelist
     else:
@@ -85,5 +89,7 @@ async def on_member_update(before, after):
     new_name = after.name
     if old_name != after.name:
         srv = await Utils.get_server(before.server.id)
+        if not srv:
+            return
         if srv.log_active['name']:
             return await client.send_message(client.get_channel(str(srv.event_channel)), ':anger: <@!'+before.id+'> changed their name from **'+old_name+'** to **'+after.name+'**')     

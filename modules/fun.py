@@ -4,11 +4,9 @@ import random
 import aiohttp
 from time import strptime
 
-session = aiohttp.ClientSession()
-
 @client.command()
 async def bsf():
-    async with session.get('https://s3.amazonaws.com/dolartoday/data.json')as dolartoday:
+    async with aiohttp.get('https://s3.amazonaws.com/dolartoday/data.json')as dolartoday:
         result = await dolartoday.json(encoding='cp1252')
         price = result['USD']['promedio']
         embed = discord.Embed(Title='USD', color=0xf4f142)
@@ -47,7 +45,7 @@ async def rule34(ctx,tag):
     if 'nsfw' not in ctx.message.channel.name:
         return await client.say(":negative_squared_cross_mark: You can only use this in NSFW channels")
     await client.send_typing(ctx.message.channel)
-    async with session.get('https://rule34.xxx/index.php?page=dapi&s=post&q=index&limit=50&tags={}'.format(tag)) as result:
+    async with aiohttp.get('https://rule34.xxx/index.php?page=dapi&s=post&q=index&limit=50&tags={}'.format(tag)) as result:
         result = await result.text()
         result = xml.fromstring(result.encode())
         if len(result)==0:
@@ -57,6 +55,7 @@ async def rule34(ctx,tag):
         embed.set_author(icon_url='https://image.ibb.co/dFAmGT/r34.png',url='https://rule34.xxx/index.php?page=post&s=view&id={}'.format(post['id']),name='ID: {}'.format(post['id']))
         embed.add_field(name='Rating',value=post['rating'].upper())
         embed.add_field(name='Score',value=post['score'])
+        embed.add_field(name='Tags',value=tag)
         embed.set_image(url=post['file_url'])
         stm = post['created_at'].split(' ')
         embed.set_footer(text='Created at {}/{}/{}'.format(stm[2],strptime(stm[1],'%b').tm_mon,stm[-1]))
@@ -71,7 +70,7 @@ async def hastebin(ctx):
     if msg == None:
         return await client.say(':zzz: Timed out...') 
     msg_txt = msg.content[3:-3]
-    async with session.post("https://hastebin.com/documents",data=msg_txt.encode('utf-8')) as post:
+    async with aiohttp.post("https://hastebin.com/documents",data=msg_txt.encode('utf-8')) as post:
         post = await post.json()
         url = "https://hastebin.com/{}".format(post['key']) 
     embed = discord.Embed(title="Paste created successfully!",color=0x424ef4)
@@ -81,7 +80,7 @@ async def hastebin(ctx):
 
 @client.command()
 async def shibe():
-	async with session.get("http://shibe.online/api/shibes?count=10&urls=true&httpsUrls=false") as shibe:
+	async with aiohttp.get("http://shibe.online/api/shibes?count=10&urls=true&httpsUrls=false") as shibe:
 		shibe = await shibe.json()
 		embed = discord.Embed(title="Shibeeee")
 		embed.set_image(url=random.choice(shibe))
@@ -89,7 +88,7 @@ async def shibe():
 
 @client.command()
 async def cat():
-    async with session.get("") as cat:
+    async with aiohttp.get("https://aws.random.cat/meow") as cat:
         cat = await cat.json()
         embed = discord.Embed(title="Catoooo")
         embed.set_image(url=cat['file'])

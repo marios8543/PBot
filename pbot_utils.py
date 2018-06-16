@@ -175,6 +175,8 @@ class Utils():
         'log_whitelist','welcome_channel','goodbye_channel','event_channel',
         'log_channel','log_active','max_warns'],params={'id':id})
         id = str(id)
+        if result==None:
+            return
         if result.log_whitelist:
             log_whitelist = json.loads(result.log_whitelist)
         else:
