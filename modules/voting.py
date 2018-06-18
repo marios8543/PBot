@@ -188,8 +188,9 @@ async def vote(ctx):
 @vote.command(pass_context=True)
 async def kick(ctx):
     if vote_running(ctx):
-        return await client.say(':negative_squared_cross_mark: You can only have one vote running per channel')    
-    if await Utils.get_server(ctx.message.server.id).log_active['votekick']=='1':
+        return await client.say(':negative_squared_cross_mark: You can only have one vote running per channel')
+    active = await Utils.get_server(ctx.message.server.id)
+    if active.log_active['votekick']=='1':
         user = ctx.message.server.get_member(''.join(ctx.message.raw_mentions))
         vote = Vote(ctx,votetype=1,target=user)
         msg = await vote.make_embed()
