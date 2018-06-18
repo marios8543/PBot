@@ -219,7 +219,7 @@ async def kick(ctx):
             await client.say(embed=embed)
             await client.send_message(vote.target,':exclamation: You have been kicked because you have been voted off')
             await client.send_message(vote.target,embed=embed)
-            await client.kick(vote.target,reason='Votekicked by {}#{}'.format(vote.user.name,vote.user.discriminator))
+            await client.kick(vote.target)
         else:
             await client.say(embed=embed)
     else:
