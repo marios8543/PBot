@@ -1,6 +1,5 @@
 from pbot_utils import *
 import xml.etree.ElementTree as xml
-from pyquery import PyQuery as pq
 import random
 import aiohttp
 from time import strptime
