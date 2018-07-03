@@ -1,8 +1,11 @@
 from pbot_utils import *
-import xml.etree.ElementTree as xml
+from lxml import etree as et
+from pyquery import PyQuery as pq
 import random
 import aiohttp
 from time import strptime
+from datetime import datetime
+import math
 
 @client.command()
 async def bsf():
@@ -47,7 +50,7 @@ async def rule34(ctx,tag):
     await client.send_typing(ctx.message.channel)
     async with aiohttp.get('https://rule34.xxx/index.php?page=dapi&s=post&q=index&limit=50&tags={}'.format(tag)) as result:
         result = await result.text()
-        result = xml.fromstring(result.encode())
+        result = et.fromstring(result.encode())
         if len(result)==0:
             return await client.say(":red_circle: Couldn't find anything on that")
         post = random.choice(result).attrib
@@ -93,3 +96,42 @@ async def cat():
         embed = discord.Embed(title="Catoooo")
         embed.set_image(url=cat['file'])
         return await client.say(embed=embed)
+
+@client.command()
+async def mcafee():
+    async with aiohttp.get('https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD,EUR') as coin_json:
+        result_stats = await coin_json.json()
+        bpi = result_stats['USD']
+        tbpi = 2244.265
+        days_elapsed = (datetime.now()-datetime.strptime('07 17 17','%m %d %y')).days
+        days_left = (datetime.strptime('12 31 20','%m %d %y')-datetime.now()).days
+        grate = 0.7826319559
+        pprice = 10**(grate*(days_elapsed/365))*tbpi
+        pdiff = ((bpi-pprice)/pprice)*100
+        pprice = "%.2f" % pprice
+        aheadOrBelowStr = "ahead of"
+        droppedOrIncreasedStr = 'If the price dropped to ${} it would still be'.format(pprice)
+        if pdiff in range(0,10):
+            isdickonthemenu = "Maybe?"
+            thmb = "http://i0.kym-cdn.com/photos/images/masonry/001/062/427/2f7.jpg"
+            emcolor = 0xf2c307
+        elif pdiff>10:
+
+            isdickonthemenu = "No!"
+            thmb = "https://i.warosu.org/data/biz/img/0096/98/1527820986778.png"
+            emcolor = 0x099b0b
+        else:
+            aheadOrBelowStr = "below"
+            isdickonthemenu = "Yes!!!"
+            thmb = "https://image.jimcdn.com/app/cms/image/transf/dimension=372x10000:format=png/path/sb4e45334ca2daabf/image/i3b0c19a39abe4003/version/1526826369/image.png"
+            droppedOrIncreasedStr = 'The price needs to increase to ${} to be'.format(pprice)
+            emcolor = 0xe00808
+        pdiff = "%.2f" % pdiff    
+        embed = discord.Embed(Title=isdickonthemenu, color=emcolor)
+        embed.set_author(name="Will McAfee eat his own dick ? {}".format(isdickonthemenu))
+        embed.add_field(name="The current Bitcoin price is **${}**".format(bpi),value="**{}%** {} McAfee's bet's price target".format(pdiff,aheadOrBelowStr))
+        embed.add_field(name=droppedOrIncreasedStr,value="on target for $1M/Bitcoin by the three year deadline ending in **{} days**".format(days_left))
+        embed.set_image(url="https://diegorod.github.io/WillMcAfeeEatHisOwnDick/img/tweet2.jpg")
+        embed.set_thumbnail(url=thmb)
+        return await client.say(embed=embed)
+
