@@ -1,5 +1,5 @@
 from pbot_utils import *
-from lxml import etree as et
+import xml.etree.ElementTree as xml
 from pyquery import PyQuery as pq
 import random
 import aiohttp
@@ -50,7 +50,7 @@ async def rule34(ctx,tag):
     await client.send_typing(ctx.message.channel)
     async with aiohttp.get('https://rule34.xxx/index.php?page=dapi&s=post&q=index&limit=50&tags={}'.format(tag)) as result:
         result = await result.text()
-        result = et.fromstring(result.encode())
+        result = xml.fromstring(result.encode())
         if len(result)==0:
             return await client.say(":red_circle: Couldn't find anything on that")
         post = random.choice(result).attrib
