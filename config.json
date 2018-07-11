@@ -1,10 +1,7 @@
 {
   "join_msg": "Hey I'm >PBot. Thanks for inviting me to your server...\n\n        Made with :heart: by Uwumin (tzatzikiweeb#7687)\n        https://github.com/marios8543/PBot\n\n        >Implying we can programming\n        https://discord.gg/XACSrhZ\n                                     ",
   "token": "",
-  "mysql_address":"127.0.0.1",
-  "mysql_user":"root",
-  "mysql_password":"",
-  "mysql_database":"pbot",
+  "database":"pbot.db",
   "warn_whitelist":[],
   "logging_blacklist":[],
   "max_softban":"60",

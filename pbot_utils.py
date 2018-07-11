@@ -12,7 +12,7 @@ import pbot_orm
 
 #Parse config
 with open("config.json","r+") as config:
-    config = json.loads(config.read())
+    config = json.loads(config.read())    
 
 def timestamp():
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -33,6 +33,18 @@ async def log_members():
         print('Saved missing member {} (ServerID: {})'.format(m[0],m[1]))
     return 1
 
+async def log_servers():
+    res = await db.selectmany(table='servers',fields=['id'])
+    db_servers = [r.id for r in res]
+    servers = [int(s.id) for s in client.servers]
+    missing = set(servers) - set(db_servers)
+    for m in missing:
+        await Utils.make_server(id=m)
+        print("Logged missing server ",m)
+    return 1    
+
+
+
 client = Bot(description="pbot_public", command_prefix=">>")
 warn_whitelist = config['warn_whitelist']
 logging_blacklist = []
@@ -41,9 +53,10 @@ db = pbot_orm.ORM(None,None)
 
 @client.event
 async def on_ready():
-    dicc = await pbot_orm.connect(host=config['mysql_address'],username=config['mysql_user'],password=config['mysql_password'],database=config['mysql_database'],loop=client.loop)
+    dicc = await pbot_orm.connect(database=config['database'],loop=client.loop)
     db.db = dicc['db']
     db.conn = dicc['conn']
+    await log_servers()
     await log_members()
     logging_blacklist.append(config['logging_blacklist'])
     logging_blacklist.append(client.user.id)
