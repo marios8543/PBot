@@ -13,7 +13,7 @@ If you want to use >PBot you can use this [invite link](https://discordapp.com/a
 
 
 ## Command list:
-- Channel Settings:
+- Settings:
   - setwelcome  
   Sets the welcome message channel
   - setgoodbye  
@@ -24,6 +24,14 @@ If you want to use >PBot you can use this [invite link](https://discordapp.com/a
   Sets the message logging channel (Deletes, Edits)
   - logging [name or msg] 
   Toggles name-change/message-change logging on/off
+  - setmessage *see below*
+    - welcome
+    Sets the welcome message (Use **{member_name}** and **{server_name}** accordingly).
+    - welcome_pm
+    Sets the message that is sent to a member when they join the server
+    Use **{member_name}** and **{server_name}** accordingly. It's good to include that they need to click on :+1: to get verified.
+    - goodbye
+    Sets the goodbye message (Use **{member_name}** accordingly).
 
 - Admin Commands:
   - check *tag*  
