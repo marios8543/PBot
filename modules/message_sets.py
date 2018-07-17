@@ -42,7 +42,6 @@ async def welcome_pm(ctx):
     if not Utils.check_perms_ctx(ctx,'manage_channels'):
         return await client.say(config['error_permissions'].format('Manage Channels'))
     server = await Utils.get_server(ctx.message.channel.server.id)
-    print(server.entry_text_pm)
     await client.say(":pencil: Enter your new PM welcome message in a triple-backtick codeblock or `cancel` to exit. \n Your current message is: \n ```{}```".format(server.entry_text_pm))
     msg = await client.wait_for_message(timeout=240,author=ctx.message.author,channel=ctx.message.channel)
     if not msg or msg.content=='cancel':
