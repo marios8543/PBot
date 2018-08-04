@@ -17,7 +17,7 @@ with open("config.json","r+") as config:
 if config['logging']=="true":
     import logging
     logger = logging.getLogger('discord')
-    logging.basicConfig(level=config['log_level'])
+    logging.basicConfig(level=int(config['log_level']))
     handler = logging.FileHandler(filename='logs/{}.log'.format(datetime.now().strftime('%Y-%m-%d %H:%M:%S')), encoding='utf-8', mode='w')
     handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
     logger.addHandler(handler)
