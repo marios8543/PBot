@@ -1,5 +1,5 @@
 import asyncio
-import aiosqlite3
+import aiopg
 from misc.queries import queries
 
 def normalize(s):
@@ -18,13 +18,12 @@ class Result():
 			dicc[prop]=value
 		return dicc
 
-async def connect(database=None,loop=None):
-	conn = await aiosqlite3.connect(database,loop=loop)
+async def connect(host=None,user=None,password=None,database=None,loop=None):
+	conn = await aiopg.connect(database=database,user=user,password=password,host=host,loop=loop,port=5433)
 	db = await conn.cursor()
 	print("Checking database...")
 	for q in queries:
 		await db.execute(q)
-		await conn.commit()
 	return {'conn':conn,'db':db}
 
 class ORM():
@@ -46,7 +45,7 @@ class ORM():
 			for param in params:
 				if type(param) == int:
 					param = str(param)
-				params_str = params_str+' {key}=? AND'.format(**{'key':param})
+				params_str = params_str+' {key}=%s AND'.format(**{'key':param})
 				params_arr.append(params[param])
 			params_str='WHERE '+params_str[:-3]						
 		elif params=='':
@@ -80,7 +79,7 @@ class ORM():
 			for param in params:
 				if type(param) == int:
 					param = str(param)
-				params_str = params_str+' {key}=? AND'.format(**{'key':param})
+				params_str = params_str+' {key}=%s AND'.format(**{'key':param})
 				params_arr.append(params[param])
 			params_str='WHERE '+params_str[:-3]
 		elif params=='':
@@ -114,7 +113,7 @@ class ORM():
 		value_arr = []
 		for value in values:
 			value_str.append(value)
-			prcnt_str.append('?')
+			prcnt_str.append('%s')
 			value_arr.append(normalize(values[value]))
 		value_str = ",".join(value_str)
 		prcnt_str = ",".join(prcnt_str)
@@ -130,7 +129,7 @@ class ORM():
 			value_str = []
 			value_arr = []	
 			for value in values:
-				value_str.append("{}=?".format(value))
+				value_str.append("{}=%s".format(value))
 				value = normalize(values[value])
 				value_arr.append(value)
 			value_str = ",".join(value_str)	
@@ -142,7 +141,7 @@ class ORM():
 			params_str = []
 			param_arr = []	
 			for param in params:
-				params_str.append("{}=? AND".format(param))
+				params_str.append("{}=%s AND".format(param))
 				param = normalize(params[param])
 				param_arr.append(param)
 			params_str = " ".join(params_str)	

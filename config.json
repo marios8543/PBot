@@ -1,7 +1,10 @@
 {
   "join_msg": "Hey I'm >PBot. Thanks for inviting me to your server...\n\n        Made with :heart: by Uwumin (tzatzikiweeb#7687)\n        https://github.com/marios8543/PBot\n\n        >Implying we can programming\n        https://discord.gg/XACSrhZ\n                                     ",
   "token": "",
-  "database":"pbot.db",
+  "db_address":"localhost",
+  "db_user":"postgres",
+  "db_password":"",
+  "db_database":"pbot",
   "warn_whitelist":[],
   "logging_blacklist":[],
   "max_softban":"60",

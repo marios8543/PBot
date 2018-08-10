@@ -62,7 +62,12 @@ db = pbot_orm.ORM(None,None)
 
 @client.event
 async def on_ready():
-    dicc = await pbot_orm.connect(database=config['database'],loop=client.loop)
+    dicc = await pbot_orm.connect(
+    host = config['db_address'],
+    user = config['db_user'],
+    password = config['db_password'],
+    database = config['db_database'],
+    loop=client.loop)
     db.db = dicc['db']
     db.conn = dicc['conn']
     await log_servers()
