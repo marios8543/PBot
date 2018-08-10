@@ -4,6 +4,7 @@ import random
 import aiohttp
 from time import strptime
 from datetime import datetime
+import time
 import math
 
 @client.command()
@@ -29,18 +30,15 @@ async def emoji(emoji):
             embed.add_field(name='Emoji name', value=emoji.name,inline=False)
             embed.add_field(name='Emoji ID', value=str(emoji.id),inline=False)
             url = emoji.url
-            print(url)
             embed.set_image(url=url)
             return await client.say(embed=embed)
 
-@client.command()
-async def ping():
-    timestamp = datetime.now()
-    msg = await client.say('I work!!!')
-    msg_time = msg.timestamp
-    result = timestamp - msg_time
-    result = result.total_seconds()
-    return await client.edit_message(msg,'I work!!! `'+str(abs(result))[:-3]+'sec`')
+@client.command(pass_context=True)
+async def ping(ctx):
+	t1 = time.perf_counter()
+	await client.send_typing(ctx.message.channel)
+	t2 = time.perf_counter()
+	return await client.say('I work!!! `{}ms`'.format(int( float("%.2f"%(t2-t1))*100)))
 
 @client.command(pass_context=True)
 async def rule34(ctx,tag):
