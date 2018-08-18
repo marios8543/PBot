@@ -9,10 +9,15 @@ from datetime import datetime
 from random import randint
 import hashlib
 import pbot_orm
+import os
 
 #Parse config
 with open("config.json","r+") as config:
-    config = json.loads(config.read())    
+    config = json.loads(config.read())
+    if os.getenv('discord_token'):
+        config['token']=os.getenv('discord_token')
+    if os.getenv('DATABASE_URL'):
+        config['dsn']=os.getenv('DATABASE_URL')
 
 if config['logging']=="true":
     import logging
@@ -62,12 +67,15 @@ db = pbot_orm.ORM(None,None)
 
 @client.event
 async def on_ready():
-    dicc = await pbot_orm.connect(
-    host = config['db_address'],
-    user = config['db_user'],
-    password = config['db_password'],
-    database = config['db_database'],
-    loop=client.loop)
+    if 'dsn' in config:
+        dicc = await pbot_orm.connect(dsn=config['dsn'])
+    else:
+        dicc = await pbot_orm.connect(
+        host = config['db_address'],
+        user = config['db_user'],
+        password = config['db_password'],
+        database = config['db_database'],
+        loop=client.loop)
     db.db = dicc['db']
     db.conn = dicc['conn']
     await log_servers()
@@ -81,7 +89,6 @@ def ascii_convert(s):
         return unicodedata.normalize('NFKD', s).encode('ascii','ignore')
     else:
         return s    
-
 
 class User():
     id = ""

@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS members (
 	server_id	BIGINT,
 	verified	INTEGER DEFAULT 0,
 	in_server	INTEGER DEFAULT 1,
-	warns	INTEGER DEFAULT 0
+	warns	INTEGER DEFAULT 0,
+	konishi TEXT DEFAULT NULL
 );
 """
 ,"""

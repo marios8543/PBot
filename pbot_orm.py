@@ -18,8 +18,11 @@ class Result():
 			dicc[prop]=value
 		return dicc
 
-async def connect(host=None,user=None,password=None,database=None,loop=None):
-	conn = await aiopg.connect(database=database,user=user,password=password,host=host,loop=loop,port=5433)
+async def connect(host=None,user=None,password=None,database=None,loop=None,dsn=None):
+	if dsn:
+		conn = await aiopg.connect(dsn)
+	else:
+		conn = await aiopg.connect(database=database,user=user,password=password,host=host,loop=loop,port=5432)
 	db = await conn.cursor()
 	print("Checking database...")
 	for q in queries:
