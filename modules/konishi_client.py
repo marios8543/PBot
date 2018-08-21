@@ -178,11 +178,3 @@ async def reactionadd(r,u):
 					resp = await resp.json()
 					await client.send_messageI(u,":negative_squared_cross_mark: Error: {}".format(resp['message']))
 		return
-
-
-
-@client.command(pass_context=True)
-async def die(ctx):
-	if ctx.message.author.id=='196224042988994560':
-		await client.say("DAD WHYYYYYYY")
-		exit()
