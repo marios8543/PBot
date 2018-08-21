@@ -17,7 +17,6 @@ async def btc():
 		embed.set_author(name='Bitcoin',icon_url='https://cdn.pixabay.com/photo/2013/12/08/12/12/bitcoin-225079_960_720.png')
 		embed.add_field(name='USD', value=str(usdprice)+'$', inline=False)
 		embed.add_field(name='EUR', value=str(eurprice)+'€', inline=False)
-		embed.set_footer(text="KryptoBot")
 		await client.say(embed=embed)
 
 #Ethereum price
@@ -31,7 +30,6 @@ async def eth():
 		embed.set_author(name='Ethereum',icon_url='https://cdn.discordapp.com/attachments/271256875205525504/374282740218200064/2000px-Ethereum_logo.png')
 		embed.add_field(name='USD', value=str(usdprice)+'$', inline=False)
 		embed.add_field(name='EUR', value=str(eurprice)+'€', inline=False)
-		embed.set_footer(text="KryptoBot")
 		await client.say(embed=embed)
 
 #Zcash price
@@ -45,7 +43,6 @@ async def zec():
 		embed.set_author(name='Zcash',icon_url='https://www.zcashcommunity.com/wp-content/uploads/2017/01/cropped-yellow-zcash-logo.png')
 		embed.add_field(name='USD', value=str(usdprice)+'$', inline=False)
 		embed.add_field(name='EUR', value=str(eurprice)+'€', inline=False)
-		embed.set_footer(text="KryptoBot")
 		await client.say(embed=embed)
 
 #Decred price
@@ -59,7 +56,6 @@ async def dcr():
 		embed.set_author(name='Decred',icon_url='https://forum.decred.org/styles/material/uix/logo.png')
 		embed.add_field(name='USD', value=str(usdprice)+'$', inline=False)
 		embed.add_field(name='EUR', value=str(eurprice)+'€', inline=False)
-		embed.set_footer(text="KryptoBot")
 		await client.say(embed=embed)
 
 #Dash price
@@ -73,7 +69,6 @@ async def dash():
 		embed.set_author(name='Dash',icon_url='http://bitcoinchaser.com/wp-content/uploads/2017/03/dashcoin-300x300.png')
 		embed.add_field(name='USD', value=str(usdprice)+'$', inline=False)
 		embed.add_field(name='EUR', value=str(eurprice)+'€', inline=False)
-		embed.set_footer(text="KryptoBot")
 		await client.say(embed=embed)
 
 #Litecoin price
@@ -87,7 +82,6 @@ async def ltc():
 		embed.set_author(name='Litecoin',icon_url='http://ltc.133.io/images/logosizes/ltc800.png')
 		embed.add_field(name='USD', value=str(usdprice)+'$', inline=False)
 		embed.add_field(name='EUR', value=str(eurprice)+'€', inline=False)
-		embed.set_footer(text="KryptoBot")
 		await client.say(embed=embed)
 
 #Ripple price
@@ -101,7 +95,6 @@ async def xrp():
 		embed.set_author(name='Ripple',icon_url='http://bitcoinist.com/wp-content/uploads/2016/08/Ripple-logo.png')
 		embed.add_field(name='USD', value=str(usdprice)+'$', inline=False)
 		embed.add_field(name='EUR', value=str(eurprice)+'€', inline=False)
-		embed.set_footer(text="KryptoBot")
 		await client.say(embed=embed)
 
 #Ethereum classic price
@@ -115,7 +108,6 @@ async def etc():
 		embed.set_author(name='Ethereum Classic',icon_url='https://raw.githubusercontent.com/ethereumclassic/Media_Kit/master/Classic_Logo_Solid/ETC_LOGO_Full_Color_Green.png')
 		embed.add_field(name='USD', value=str(usdprice)+'$', inline=False)
 		embed.add_field(name='EUR', value=str(eurprice)+'€', inline=False)
-		embed.set_footer(text="KryptoBot")
 		await client.say(embed=embed)
 
 #Dogecoin price
@@ -129,7 +121,6 @@ async def doge():
 		embed.set_author(name='Dogecoin',icon_url='https://i.redd.it/ony3qesa3ebx.png')
 		embed.add_field(name='USD', value=str(usdprice)+'$', inline=False)
 		embed.add_field(name='EUR', value=str(eurprice)+'€', inline=False)
-		embed.set_footer(text="KryptoBot")
 		await client.say(embed=embed)
 
 #Bitcoin cash prices
@@ -143,5 +134,4 @@ async def bch():
 		embed.set_author(name='Bitcoin Cash',icon_url='https://files.coinmarketcap.com/static/img/coins/32x32/bitcoin-cash.png')
 		embed.add_field(name='USD', value=str(usdprice)+'$', inline=False)
 		embed.add_field(name='EUR', value=str(eurprice)+'€', inline=False)
-		embed.set_footer(text="KryptoBot")
 		await client.say(embed=embed)
