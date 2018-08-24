@@ -41,11 +41,12 @@ async def ping(ctx):
 	return await client.say('I work!!! `{}ms`'.format(int( float("%.2f"%(t2-t1))*100)))
 
 @client.command(pass_context=True)
-async def rule34(ctx,tag):
+async def rule34(ctx,*tag):
     if 'nsfw' not in ctx.message.channel.name:
         return await client.say(":negative_squared_cross_mark: You can only use this in NSFW channels")
+    query = "+".join(tag)
     await client.send_typing(ctx.message.channel)
-    async with aiohttp.get('https://rule34.xxx/index.php?page=dapi&s=post&q=index&limit=50&tags={}'.format(tag)) as result:
+    async with aiohttp.get('https://rule34.xxx/index.php?page=dapi&s=post&q=index&limit=50&tags={}'.format(query)) as result:
         result = await result.text()
         result = xml.fromstring(result.encode())
         if len(result)==0:
@@ -55,7 +56,28 @@ async def rule34(ctx,tag):
         embed.set_author(icon_url='https://image.ibb.co/dFAmGT/r34.png',url='https://rule34.xxx/index.php?page=post&s=view&id={}'.format(post['id']),name='ID: {}'.format(post['id']))
         embed.add_field(name='Rating',value=post['rating'].upper())
         embed.add_field(name='Score',value=post['score'])
-        embed.add_field(name='Tags',value=tag)
+        embed.add_field(name='Tags',value=", ".join(post['tags'].split(" ")[:10])[1:]+" and more...")
+        embed.set_image(url=post['file_url'])
+        stm = post['created_at'].split(' ')
+        embed.set_footer(text='Created at {}/{}/{}'.format(stm[2],strptime(stm[1],'%b').tm_mon,stm[-1]))
+        return await client.say(embed=embed)
+        
+@client.command(pass_context=True)
+async def gelbooru(ctx,*tag):
+    if 'nsfw' not in ctx.message.channel.name:
+        return await client.say(":negative_squared_cross_mark: You can only use this in NSFW channels")
+    query = "+".join(tag)
+    await client.send_typing(ctx.message.channel)
+    async with aiohttp.get('https://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=50&json=1&tags={}'.format(query)) as result:
+        result = await result.json()
+        if len(result)==0:
+            return await client.say(":red_circle: Couldn't find anything on that")
+        post = random.choice(result)
+        embed = discord.Embed(Title='Gelbooru')
+        embed.set_author(icon_url='https://gelbooru.com/favicon.png',url=post['file_url'],name='ID: {}'.format(post['id']))
+        embed.add_field(name='Rating',value=post['rating'].upper())
+        embed.add_field(name='Score',value=post['score'])
+        embed.add_field(name='Tags',value=", ".join(post['tags'].split(" ")[:10])[1:]+" and more...")
         embed.set_image(url=post['file_url'])
         stm = post['created_at'].split(' ')
         embed.set_footer(text='Created at {}/{}/{}'.format(stm[2],strptime(stm[1],'%b').tm_mon,stm[-1]))
