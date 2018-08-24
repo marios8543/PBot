@@ -70,7 +70,7 @@ async def gelbooru(ctx,*tag):
     await client.send_typing(ctx.message.channel)
     async with aiohttp.get('https://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=50&json=1&tags={}'.format(query)) as result:
         result = await result.json()
-        if len(result)==0:
+        if result==None:
             return await client.say(":red_circle: Couldn't find anything on that")
         post = random.choice(result)
         embed = discord.Embed(Title='Gelbooru')
