@@ -12,11 +12,11 @@ async def on_member_join(member):
     await client.add_roles(member, unverified)
     await client.send_message(client.get_channel(str(srv.welcome_channel)),srv.entry_text.format(**{'member_name':member.name,'server_name':server.name}))
     msg = await client.send_message(member,srv.entry_text_pm.format(**{'member_name':member.name,'server_name':server.name}))
-    await client.add_reaction(msg,'👝')
+    await client.add_reaction(msg,'\U0001f44d')
     await asyncio.sleep(1)
     res = await client.wait_for_reaction(message=msg)
     usr = await srv.make_member(member.id)
-    if res.reaction.emoji == '👝':
+    if res.reaction.emoji == '\U0001f44d':
         await client.remove_roles(member,unverified)
         await client.send_message(member,':white_check_mark: You have been verified. Enjoy your stay :champagne:')
         usr.verified = 1
