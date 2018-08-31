@@ -3,7 +3,10 @@ from pbot_utils import *
 
 #Warn command
 @client.command(pass_context=True)
-async def warn(ctx,user,reason):
+async def warn(ctx,user,*reason):
+    if not reason:
+        return await client.say(":negative_squared_cross_mark: No reason provided")
+    reason = " ".join(reason)
     server = ctx.message.server
     srv = await Utils.get_server(server.id)
     if Utils.check_perms_ctx(ctx,'ban_members'):
@@ -12,6 +15,8 @@ async def warn(ctx,user,reason):
         else:
             user_id = ''.join(ctx.message.raw_mentions)
         warnman = await srv.get_member(user_id)
+        warns = warnman.warnings
+        max_warns = srv.max_warnings
         if str(user_id) not in warn_whitelist:
             if await warnman.warn()==1:
                 await client.say(':exclamation: <@!'+str(user_id)+'> has been warned. His warning count is now '+str(warnman.warnings+1)+' ('+str(int(srv.max_warnings)-int(warnman.warnings) -1)+' warns left)')
@@ -25,12 +30,15 @@ async def warn(ctx,user,reason):
             elif await warnman.warn()==2:
                 member2server = server.get_member(user_id)
                 msg = await client.say(':exclamation: User has {} warnings and will be banned! Click on :white_check_mark: to confirm...'.format(warnman.warnings))
-                await client.add_reaction(msg,'👍')
+                await client.add_reaction(msg,'\U0001f44d')
                 await asyncio.sleep(1)
-                res = await client.wait_for_reaction(message=msg)
-                if res.reaction.emoji == '👍':
-                    await client.ban(member2server)
-                    await client.send_message(client.get_user_info(user_id),'You have been banned for breaking the rules. You totally received '+str(warns)+' warnings before being issued a ban.')
+                while True:
+                    res = await client.wait_for_reaction(message=msg)
+                    if res.reaction.emoji == '\U0001f44d' and res.user==ctx.message.author:
+                        await client.ban(member2server)
+                        return await client.send_message(member2server,'You have been banned for breaking the rules. You totally received '+str(warns)+' warnings before being issued a ban.')
+                    if not res:
+                        return
             else:
                 await client.say(config['default_error'])        
         else:

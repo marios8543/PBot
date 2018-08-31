@@ -1,13 +1,31 @@
 from pbot_utils import *
 import aiohttp
 
+@client.command()
+async def crypto(coin=None,currency='USD'):
+    if not coin:
+        return await client.say(":negative_squared_cross_mark: No coin specified")
+    currency = currency.upper()
+    coin = coin.upper()
+    async with aiohttp.get("https://min-api.cryptocompare.com/data/price",params={'fsym':coin,'tsyms':currency}) as r:
+        r = await r.json()
+        if "Response" in r:
+            return await client.say(":negative_squared_cross_mark: {}".format(r['Message']))
+        else:
+            e = discord.Embed(description=":money_with_wings: The current **{}** price in **{}** is ***{}***".format(coin,currency,r[currency]))
+            return await client.say(embed=e)
+
+
+
+# LEGACY CRYPTO COMMANDS. KEPT AROUND FOR REFERENCE
+
 @client.group(pass_context=True)
-async def crypto(ctx):
+async def legacy_crypto(ctx):
     if ctx.invoked_subcommand is None:
         await client.say('Invalid subcommand')
 
 #Bitcoin price
-@crypto.command()
+@legacy_crypto.command()
 async def btc():
 	async with aiohttp.get('https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD,EUR') as coin_json:
 		result_stats = await coin_json.json()
@@ -20,7 +38,7 @@ async def btc():
 		await client.say(embed=embed)
 
 #Ethereum price
-@crypto.command()
+@legacy_crypto.command()
 async def eth():
 	async with aiohttp.get('https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD,EUR') as coin_json:
 		result_stats = await coin_json.json()
@@ -33,7 +51,7 @@ async def eth():
 		await client.say(embed=embed)
 
 #Zcash price
-@crypto.command()
+@legacy_crypto.command()
 async def zec():
 	async with aiohttp.get('https://min-api.cryptocompare.com/data/price?fsym=ZEC&tsyms=USD,EUR') as coin_json:
 		result_stats = await coin_json.json()
@@ -46,7 +64,7 @@ async def zec():
 		await client.say(embed=embed)
 
 #Decred price
-@crypto.command()
+@legacy_crypto.command()
 async def dcr():
 	async with aiohttp.get('https://min-api.cryptocompare.com/data/price?fsym=DCR&tsyms=USD,EUR') as coin_json:
 		result_stats = await coin_json.json()
@@ -59,7 +77,7 @@ async def dcr():
 		await client.say(embed=embed)
 
 #Dash price
-@crypto.command()
+@legacy_crypto.command()
 async def dash():
 	async with aiohttp.get('https://min-api.cryptocompare.com/data/price?fsym=DASH&tsyms=USD,EUR') as coin_json:
 		result_stats = await coin_json.json()
@@ -72,7 +90,7 @@ async def dash():
 		await client.say(embed=embed)
 
 #Litecoin price
-@crypto.command()
+@legacy_crypto.command()
 async def ltc():
 	async with aiohttp.get('https://min-api.cryptocompare.com/data/price?fsym=LTC&tsyms=USD,EUR') as coin_json:
 		result_stats = await coin_json.json()
@@ -85,7 +103,7 @@ async def ltc():
 		await client.say(embed=embed)
 
 #Ripple price
-@crypto.command()
+@legacy_crypto.command()
 async def xrp():
 	async with aiohttp.get('https://min-api.cryptocompare.com/data/price?fsym=XRP&tsyms=USD,EUR') as coin_json:
 		result_stats = await coin_json.json()
@@ -98,7 +116,7 @@ async def xrp():
 		await client.say(embed=embed)
 
 #Ethereum classic price
-@crypto.command()
+@legacy_crypto.command()
 async def etc():
 	async with aiohttp.get('https://min-api.cryptocompare.com/data/price?fsym=ETC&tsyms=USD,EUR') as coin_json:
 		result_stats = await coin_json.json()
@@ -111,7 +129,7 @@ async def etc():
 		await client.say(embed=embed)
 
 #Dogecoin price
-@crypto.command()
+@legacy_crypto.command()
 async def doge():
 	async with aiohttp.get('https://min-api.cryptocompare.com/data/price?fsym=DOGE&tsyms=USD,EUR') as coin_json:
 		result_stats = await coin_json.json()
@@ -124,7 +142,7 @@ async def doge():
 		await client.say(embed=embed)
 
 #Bitcoin cash prices
-@crypto.command()
+@legacy_crypto.command()
 async def bch():
 	async with aiohttp.get('https://min-api.cryptocompare.com/data/price?fsym=BCH&tsyms=USD,EUR') as coin_json:
 		result_stats = await coin_json.json()

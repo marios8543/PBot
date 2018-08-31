@@ -9,7 +9,11 @@ async def on_member_join(member):
         await client.send_message(client.get_channel(str(srv.log_channel)),":exclamation: RaidBot prevention `{}`".format(str(member)))
         return await client.ban(member)
     unverified = discord.utils.get(server.roles, name="Unverified")
-    await client.add_roles(member, unverified)
+    try:
+        await client.add_roles(member, unverified)
+    except:
+        client.send_message(":exclamation: Coulnd't assign Unverified role. Check permissions...")
+        pass
     await client.send_message(client.get_channel(str(srv.welcome_channel)),srv.entry_text.format(**{'member_name':member.name,'server_name':server.name}))
     msg = await client.send_message(member,srv.entry_text_pm.format(**{'member_name':member.name,'server_name':server.name}))
     await client.add_reaction(msg,'\U0001f44d')

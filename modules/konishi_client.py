@@ -121,7 +121,11 @@ async def feed(ctx):
 async def reactionadd(r,u):
 	if u==client.user:
 		return
-	if str(r.message.id) in [r['message'].id for r in usr[u]]:
+	try:
+		uusrs = [r['message'].id for r in usr[u]]
+	except:
+		pass
+	if str(r.message.id) in uusrs:
 		tkn = await db.select(table='members',fields=['konishi'],params={'id':u.id})
 		if not tkn:
 			return
