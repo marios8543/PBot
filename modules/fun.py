@@ -84,6 +84,37 @@ async def gelbooru(ctx,*tag):
         return await client.say(embed=embed)
 
 @client.command(pass_context=True)
+async def rtube(ctx,*tag):
+    if 'nsfw' not in ctx.message.channel.name:
+        return await client.say(":negative_squared_cross_mark: You can only use this in NSFW channels")
+    query = "+".join(tag)
+    await client.send_typing(ctx.message.channel)
+    async with aiohttp.get('https://api.redtube.com/?data=redtube.Videos.searchVideos&output=json&thumbsize=all',params={'search':query}) as result:
+        r = await result.json()
+        if r['count']==0:
+            return await client.say(":red_circle: Couldn't find anything on that")
+        post = random.choice(r['videos'])['video']
+        thumb = None
+        tags = []
+        for t in post['thumbs']:
+            if t['size']=='big':
+                thumb=t['src']
+                break
+        if not thumb:
+            thumb=post['thumb']
+        for t in post['tags']:
+            tags.append(t['tag_name'])
+        embed = discord.Embed(Title='Redtube')
+        embed.set_author(icon_url='http://redtubehdfree.com/hybrid_v1/m/dynamic_i/skins/redtube/app-icon.png',url=post['url'],name=post['title'])
+        embed.add_field(name='Views',value=post['views'])
+        embed.add_field(name='Rating',value=post['rating'])
+        embed.add_field(name='Duration',value=post['duration'])
+        embed.add_field(name='Tags',value=", ".join(tags[:10])[1:])
+        embed.set_image(url=thumb)
+        embed.set_footer(text="Published on: {}".format(post['publish_date']))
+        return await client.say(embed=embed)
+
+@client.command(pass_context=True)
 async def hastebin(ctx):
     await client.say(':pencil: Enter your paste in a triple-backtick code-block or type `cancel` to cancel.')
     msg = await client.wait_for_message(timeout=300,author=ctx.message.author,channel=ctx.message.channel)
@@ -117,40 +148,42 @@ async def cat():
         return await client.say(embed=embed)
 
 @client.command()
-async def mcafee():
-    async with aiohttp.get('https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD,EUR') as coin_json:
-        result_stats = await coin_json.json()
-        bpi = result_stats['USD']
-        tbpi = 2244.265
-        days_elapsed = (datetime.now()-datetime.strptime('07 17 17','%m %d %y')).days
-        days_left = (datetime.strptime('12 31 20','%m %d %y')-datetime.now()).days
-        grate = 0.7826319559
-        pprice = 10**(grate*(days_elapsed/365))*tbpi
-        pdiff = ((bpi-pprice)/pprice)*100
-        pprice = "%.2f" % pprice
-        aheadOrBelowStr = "ahead of"
-        droppedOrIncreasedStr = 'If the price dropped to ${} it would still be'.format(pprice)
-        if pdiff in range(0,10):
-            isdickonthemenu = "Maybe?"
-            thmb = "http://i0.kym-cdn.com/photos/images/masonry/001/062/427/2f7.jpg"
-            emcolor = 0xf2c307
-        elif pdiff>10:
-
-            isdickonthemenu = "No!"
-            thmb = "https://i.warosu.org/data/biz/img/0096/98/1527820986778.png"
-            emcolor = 0x099b0b
-        else:
-            aheadOrBelowStr = "below"
-            isdickonthemenu = "Yes!!!"
-            thmb = "https://image.jimcdn.com/app/cms/image/transf/dimension=372x10000:format=png/path/sb4e45334ca2daabf/image/i3b0c19a39abe4003/version/1526826369/image.png"
-            droppedOrIncreasedStr = 'The price needs to increase to ${} to be'.format(pprice)
-            emcolor = 0xe00808
-        pdiff = "%.2f" % pdiff    
-        embed = discord.Embed(Title=isdickonthemenu, color=emcolor)
-        embed.set_author(name="Will McAfee eat his own dick ? {}".format(isdickonthemenu))
-        embed.add_field(name="The current Bitcoin price is **${}**".format(bpi),value="**{}%** {} McAfee's bet's price target".format(pdiff,aheadOrBelowStr))
-        embed.add_field(name=droppedOrIncreasedStr,value="on target for $1M/Bitcoin by the three year deadline ending in **{} days**".format(days_left))
-        embed.set_image(url="https://diegorod.github.io/WillMcAfeeEatHisOwnDick/img/tweet2.jpg")
-        embed.set_thumbnail(url=thmb)
-        return await client.say(embed=embed)
+async def mcafee(bpi=None):
+    if not bpi:
+        coin_json = await aiohttp.get('https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD,EUR')
+        coin_json = await coin_json.json()
+        bpi = coin_json['USD']
+    else:
+        bpi = int(bpi)
+    tbpi = 2244.265
+    days_elapsed = (datetime.now()-datetime.strptime('07 17 17','%m %d %y')).days
+    days_left = (datetime.strptime('12 31 20','%m %d %y')-datetime.now()).days
+    grate = 0.7826319559
+    pprice = 10**(grate*(days_elapsed/365))*tbpi
+    pdiff = ((bpi-pprice)/pprice)*100
+    pprice = "%.2f" % pprice
+    aheadOrBelowStr = "ahead of"
+    droppedOrIncreasedStr = 'If the price dropped to ${} it would still be'.format(pprice)
+    if pdiff in range(0,10):
+        isdickonthemenu = "Maybe?"
+        thmb = "http://i0.kym-cdn.com/photos/images/masonry/001/062/427/2f7.jpg"
+        emcolor = 0xf2c307
+    elif pdiff>10:
+        isdickonthemenu = "No!"
+        thmb = "https://i.warosu.org/data/biz/img/0096/98/1527820986778.png"
+        emcolor = 0x099b0b
+    else:
+        aheadOrBelowStr = "below"
+        isdickonthemenu = "Yes!!!"
+        thmb = "https://image.jimcdn.com/app/cms/image/transf/dimension=372x10000:format=png/path/sb4e45334ca2daabf/image/i3b0c19a39abe4003/version/1526826369/image.png"
+        droppedOrIncreasedStr = 'The price needs to increase to ${} to be'.format(pprice)
+        emcolor = 0xe00808
+    pdiff = "%.2f" % pdiff    
+    embed = discord.Embed(Title=isdickonthemenu, color=emcolor)
+    embed.set_author(name="Will McAfee eat his own dick ? {}".format(isdickonthemenu))
+    embed.add_field(name="The current Bitcoin price is **${}**".format(bpi),value="**{}%** {} McAfee's bet's price target".format(pdiff,aheadOrBelowStr))
+    embed.add_field(name=droppedOrIncreasedStr,value="on target for $1M/Bitcoin by the three year deadline ending in **{} days**".format(days_left))
+    embed.set_image(url="https://diegorod.github.io/WillMcAfeeEatHisOwnDick/img/tweet2.jpg")
+    embed.set_thumbnail(url=thmb)
+    return await client.say(embed=embed)
 
