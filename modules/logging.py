@@ -54,13 +54,16 @@ async def on_message_delete(message):
     logging_whitelist = logging_blacklist + whitelist
     if srv.log_active['msg'] and str(message.author.id) not in logging_whitelist:
         if message.embeds:
-            message.content = 'Cannot display embed here...'
+            message.content = 'Embed below...'
         embed=discord.Embed(title=":exclamation: Deleted message", color=0xff0000)
-        embed.add_field(name="Message author", value=str(message.author.name), inline=False)
+        embed.add_field(name="Message author", value=str(message.author)+" (ID: {})".format(message.author.id), inline=False)
         embed.add_field(name="Channel", value=str(message.channel.name), inline=False)
         embed.add_field(name="Content", value=str(message.content))
         embed.set_footer(text=str(message.timestamp))
         await client.send_message(client.get_channel(str(srv.log_channel)),embed=embed)
+        for e in message.embeds:
+            await client.send_message(client.get_channel(str(srv.log_channel)),embed=e)
+        return
 
 #Message edit
 @client.event
@@ -79,23 +82,26 @@ async def on_message_edit(before, after):
     logging_whitelist = logging_blacklist + whitelist
     if srv.log_active['msg'] and str(before.author.id) not in logging_whitelist:
         if before.embeds or before.embeds:
-            before.content = 'Cannot display embed here...'
-            after.content = 'Cannot display embed here...'      
+            before.content = '1st embed'
+            after.content = '2nd embed'      
         embed=discord.Embed(title=":exclamation: Edited message", color=0xf4a142)
-        embed.add_field(name="Message author", value=str(before.author.name+'#'+before.author.discriminator), inline=False)
+        embed.add_field(name="Message author", value=str(before.author)+" (ID: {})".format(message.author.id), inline=False)
         embed.add_field(name="Channel", value=str(before.channel.name))
         embed.add_field(name="Old message", value=str(before.content), inline=False)
         embed.add_field(name="New message", value=str(after.content), inline=False)
         embed.set_footer(text=str(before.timestamp))
         await client.send_message(client.get_channel(str(srv.log_channel)),embed=embed)
+        for e in before.embeds:
+            await client.send_message(client.get_channel(str(srv.log_channel)),embed=e)
+        for e in after.embeds:
+            await client.send_message(client.get_channel(str(srv.log_channel)),embed=e)
+        return
 
 @client.event
 async def on_member_update(before, after):
-    old_name = before.name
-    new_name = after.name
-    if old_name != after.name:
+    if before.name != after.name:
         srv = await Utils.get_server(before.server.id)
         if not srv:
             return
         if srv.log_active['name']:
-            return await client.send_message(client.get_channel(str(srv.event_channel)), ':anger: <@!'+before.id+'> changed their name from **'+old_name+'** to **'+after.name+'**')     
+            return await client.send_message(client.get_channel(str(srv.event_channel)), ':anger: <@!'+before.id+'> changed their name from **'+before.name+'** to **'+after.name+'**')     
