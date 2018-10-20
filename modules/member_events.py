@@ -5,7 +5,8 @@ from pbot_utils import *
 async def on_member_join(member):
     server = member.server
     srv = await Utils.get_server(server.id)
-    if "discord.gg" in member.name:
+    if "/" in member.name and "." in member.name:
+        await client.send_message(member,":exclamation: You have been auto-banned for suspected botting. If you believe this was done by mistake message **tzatzikiweeb#7687**")
         await client.send_message(client.get_channel(str(srv.log_channel)),":exclamation: RaidBot prevention `{}`".format(str(member)))
         return await client.ban(member)
     unverified = discord.utils.get(server.roles, name="Unverified")
@@ -30,7 +31,7 @@ async def on_member_join(member):
 #Member leave event
 @client.event
 async def on_member_remove(member):
-    if "discord.gg" in member.name:
+    if "/" in member.name and "." in member.name:
         return
     srv = await Utils.get_server(member.server.id)
     await client.send_message(client.get_channel(str(srv.goodbye_channel)),srv.goodbye_text.format(member.name+'#'+member.discriminator))
