@@ -6,7 +6,7 @@ If you want to use >PBot you can use this [invite link](https://discordapp.com/a
 - Default prefix: ">>"
 - Now supports multiple servers
 - Web Dashboard
-- MySQL intergration with a custom ORM
+- PostgreSQL intergration with a custom ORM
 - Message change logging
 - Name change logging
 - Warning system
@@ -60,16 +60,33 @@ If you want to use >PBot you can use this [invite link](https://discordapp.com/a
   Creates a poll users can vote on. Instructions in command.
     - vote kick *tag* Vote-kicks the user. Duration is 5 minutes and can't be changed.
     - vote kill Cancels the vote running in that channel. Only the vote creator and people with the Manage Messages permission use this.
-  - crypto *coin*
-  Gets the price of a coin in USD and EUR. Supported coins: BTC,ETH,BCH,ZEC,DCR,DASH,LTC,XRP,ETC,DOGE. More to be added soon...
-  - rule34 *tag*
-  Gets an image from rule34.xxx based on the tag given.
+  - crypto *coin* *currency*
+  Gets the price of a coin in the currency specified (USD by default). Use each coin's 3/4 letter code not the name (ex. BTC instead of Bitcoin).
   - hastebin
   Creates a paste on hastebin.com
+  - mcafee
+  Updates you on John McAfee's ~~$500.000~~ $1.000.000 by 2020 BTC bet.
+  - shibe
+  Gets a random picture of a shibe.
+  - cat
+  Gets a random picture of a cat.
+  
+- NSFW Commands:
+  - rule34 *tag*
+  Gets an image from rule34.xxx based on the tag given.
+  - gelbooru *tag*
+  Gets an image from gelbooru.com based on the tag given.
+  - rtube *tag*
+  Gets a video/thumbnail from redtube.com based on the tag given.
 
 - Anime Commands:
   - anime search *query* Searches for the anime with the query specified
-  - anime top *upcoming*,*tv*,*movie*,*airing*,*ova*,*special*
+  - anime top *upcoming*,*tv*,*movie*,*airing*,*ova*,*special* Shows the top anime of given category
   - anime character *query* Searches for the anime character with the query specified
   
+- [Konishi](https://github.com/konishi-project) Client (use >>konishi *subcommand*):
+  - login Logs you in with your username and password and saves the session so you can use the client
+  - post Make a post. It will guide you step by step.
+  - feed Get a feed of recent posts.
+    
 More coming soon...
