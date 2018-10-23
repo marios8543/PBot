@@ -42,7 +42,7 @@ async def ping(ctx):
 
 @client.command(pass_context=True)
 async def rule34(ctx,*tag):
-    if 'nsfw' not in ctx.message.channel.name:
+    if ctx.message.channel.name and 'nsfw' not in ctx.message.channel.name:
         return await client.say(":negative_squared_cross_mark: You can only use this in NSFW channels")
     query = "+".join(tag)
     await client.send_typing(ctx.message.channel)
@@ -64,7 +64,7 @@ async def rule34(ctx,*tag):
         
 @client.command(pass_context=True)
 async def gelbooru(ctx,*tag):
-    if 'nsfw' not in ctx.message.channel.name:
+    if ctx.message.channel.name and 'nsfw' not in ctx.message.channel.name:
         return await client.say(":negative_squared_cross_mark: You can only use this in NSFW channels")
     query = "+".join(tag)
     await client.send_typing(ctx.message.channel)
@@ -85,7 +85,7 @@ async def gelbooru(ctx,*tag):
 
 @client.command(pass_context=True)
 async def rtube(ctx,*tag):
-    if 'nsfw' not in ctx.message.channel.name:
+    if ctx.message.channel.name and 'nsfw' not in ctx.message.channel.name:
         return await client.say(":negative_squared_cross_mark: You can only use this in NSFW channels")
     query = "+".join(tag)
     await client.send_typing(ctx.message.channel)
