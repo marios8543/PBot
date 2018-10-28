@@ -55,18 +55,14 @@ async def log_servers():
     for m in missing:
         await Utils.make_server(id=m)
         print("Logged missing server ",m)
-    return 1    
-
-
+    return 1
 
 client = Bot(description="pbot_public", command_prefix=">>")
 warn_whitelist = config['warn_whitelist']
 logging_blacklist = []
 db = pbot_orm.ORM(None,None)
 
-
-@client.event
-async def on_ready():
+async def initialize():
     if 'dsn' in config:
         dicc = await pbot_orm.connect(dsn=config['dsn'])
     else:
@@ -81,6 +77,12 @@ async def on_ready():
     await log_servers()
     await log_members()
     logging_blacklist.append(config['logging_blacklist'])
+    return
+loop = asyncio.get_event_loop()
+loop.run_until_complete(initialize())
+
+@client.event
+async def on_ready():
     logging_blacklist.append(client.user.id)
     print('Logged in as '+client.user.name+' (ID:'+client.user.id+') | Connected to '+str(len(client.servers))+' servers | Connected to '+str(len(set(client.get_all_members())))+' users')
 
