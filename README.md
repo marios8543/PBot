@@ -70,6 +70,8 @@ If you want to use >PBot you can use this [invite link](https://discordapp.com/a
   Gets a random picture of a shibe.
   - cat
   Gets a random picture of a cat.
+  - playing Returns the current playing status
+    - submit Submits a new playing status. Playing statuses get chosen randomly every 30 minutes
   
 - NSFW Commands:
   - rule34 *tag*

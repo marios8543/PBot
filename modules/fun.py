@@ -187,3 +187,45 @@ async def mcafee(bpi=None):
     embed.set_thumbnail(url=thmb)
     return await client.say(embed=embed)
 
+play = {"user":"","play":""}
+usrs = {}
+@client.group(pass_context=True)
+async def playing(ctx):
+    if not ctx.invoked_subcommand:
+        if len(play["play"])>0:
+            usr = await client.get_user_info(play["user"])
+            e = discord.Embed(name="Currently playing...")
+            e.set_author(name=play["play"])
+            e.set_footer(text="Submitted by: {}".format(str(usr)))
+            return await client.say(embed=e)
+        else:
+            return await client.say("Not playing anything ¯\_(ツ)_/¯")
+
+@playing.command(pass_context=True)
+async def submit(ctx,*name):
+    if ctx.message.author.id in usrs:
+        tm = usrs[ctx.message.author.id] - time.time()
+        if tm<86400:
+            return await client.say(":negative_squared_cross_mark:  You need to wait **{}** before you can submit a new status".format(time.strftime('%H:%M:%S', time.gmtime(tm))))
+    name = " ".join(name)
+    if len(name)>30:
+        return await client.say("Your game title can't be longer than 30 characters")
+    await db.insert(table="playing_status",values={"usr_id":ctx.message.author.id,"title":ascii_convert(name)})
+    usrs[ctx.message.author.id] = time.time()
+    return await client.say(":white_check_mark: Your playing status has been submitted!")
+
+async def update_playing():
+    await client.wait_until_ready()
+    while not client.is_closed:
+        await db.db.execute("SELECT usr_id,title FROM playing_status ORDER BY RANDOM() LIMIT 1")
+        res = await db.db.fetchone()
+        if res:
+            play["user"] = res[0]
+            play["play"] = res[1]
+            await client.change_presence(game=discord.Game(name=res[1]))
+        await asyncio.sleep(1800)
+client.loop.create_task(update_playing())
+
+    
+
+

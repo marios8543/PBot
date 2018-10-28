@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS members (
 	verified	INTEGER DEFAULT 0,
 	in_server	INTEGER DEFAULT 1,
 	warns	INTEGER DEFAULT 0,
-	konishi TEXT DEFAULT NULL
+	konishi TEXT DEFAULT NULL,
+	crypto TEXT DEFAULT NULL
 );
 """
 ,"""
@@ -33,4 +34,11 @@ CREATE TABLE IF NOT EXISTS setting_sessions (
 	timestamp	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	valid	INTEGER
 );
-"""]
+""",
+"""
+CREATE TABLE IF NOT EXISTS playing_status (
+	usr_id BIGINT,
+	title TEXT
+);
+"""
+]
