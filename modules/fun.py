@@ -214,7 +214,7 @@ async def submit(ctx,*name):
     usrs[ctx.message.author.id] = time.time()
     play["user"] = ctx.message.author.id
     play["play"] = ascii_convert(name)
-    await client.change_presence(game=discord.Game(name=ascii_convert(name)))
+    await client.change_presence(game=discord.Game(name=name))
     return await client.say(":white_check_mark: Your playing status has been submitted!")
 
 async def update_playing():
