@@ -212,6 +212,9 @@ async def submit(ctx,*name):
         return await client.say("Your game title can't be longer than 30 characters")
     await db.insert(table="playing_status",values={"usr_id":ctx.message.author.id,"title":ascii_convert(name)})
     usrs[ctx.message.author.id] = time.time()
+    play["user"] = ctx.message.author.id
+    play["play"] = ascii_convert(name)
+    await client.change_presence(game=discord.Game(name=ascii_convert(name)))
     return await client.say(":white_check_mark: Your playing status has been submitted!")
 
 async def update_playing():
@@ -223,7 +226,7 @@ async def update_playing():
             play["user"] = res[0]
             play["play"] = res[1]
             await client.change_presence(game=discord.Game(name=res[1]))
-        await asyncio.sleep(1800)
+        await asyncio.sleep(600)
 client.loop.create_task(update_playing())
 
     
