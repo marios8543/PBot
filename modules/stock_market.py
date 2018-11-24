@@ -4,7 +4,7 @@ from datetime import datetime
 from io import BytesIO
 import matplotlib.pyplot as plt
 import aiohttp
-import discord
+from discord import Embed
 import os
 
 BASE_URL = "https://www.alphavantage.co/query"
@@ -52,11 +52,12 @@ async def base_call(ctx,sym,ival,func):
         r = await r.json()
         if not "Error Message" in r:
             d = list(r[list(r)[1]].items())
-            e = discord.Embed()
+            e = Embed()
             e.set_author(name="{} for symbol {}".format(r['Meta Data']['1. Information'],r['Meta Data']['2. Symbol']))
             e.add_field(name="Timestamp",value=d[0][0],inline=False)
             e.add_field(name="Open  -  Close",value="${}  -  ${}".format(d[0][1]['1. open'],d[0][1]['4. close']))
             e.add_field(name="High  -  Low",value="${}  -  ${}".format(d[0][1]['2. high'],d[0][1]['3. low']))
+            e.add_field(name="Volume",value="${}".format(d[0][1]['5. volume']))
             e.set_footer(text="Last refreshed on {}".format(r['Meta Data']['3. Last Refreshed']))
             e.set_image(url=await plot(d))
             return await client.say(embed=e)

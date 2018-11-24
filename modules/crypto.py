@@ -1,30 +1,29 @@
 from pbot_utils import *
 import aiohttp
 
-@client.command()
-async def crypto(coin=None,currency='USD'):
-    if not coin:
-        return await client.say(":negative_squared_cross_mark: No coin specified")
-    currency = currency.upper()
-    coin = coin.upper()
-    async with aiohttp.get("https://min-api.cryptocompare.com/data/pricemultifull",params={'fsyms':coin,'tsyms':currency}) as r:
-        r = await r.json()
-        if "Response" in r:
-            return await client.say(":negative_squared_cross_mark: {}".format(r['Message']))
-        else:
-            r=r['RAW'][coin][currency]
-            e = discord.Embed(description=":money_with_wings: The current **{}** price in **{}** is ***{}***".format(coin,currency,r['PRICE']))
-            e.add_field(name="24h High",value=r['HIGH24HOUR'])
-            e.add_field(name="24h Low",value=r['LOW24HOUR'])
-            e.colour=0x2ecc71
-            cng = "\U000025b2 {}%"
-            if r['CHANGEDAY']<0:
-                e.colour=0xe74c3c
-                cng = "\U000025bc {}%"
-            e.add_field(name="24h Change",value=cng.format("%.2f"%r['CHANGEPCT24HOUR']))
-            return await client.say(embed=e)
-
-
+@client.group(pass_context=True)
+async def crypto(ctx,coin=None,currency='USD'):
+    if not ctx.invoked_subcommand:
+        if not coin:
+            return await client.say(":negative_squared_cross_mark: No coin specified")
+        currency = currency.upper()
+        coin = coin.upper()
+        async with aiohttp.get("https://min-api.cryptocompare.com/data/pricemultifull",params={'fsyms':coin,'tsyms':currency}) as r:
+            r = await r.json()
+            if "Response" in r:
+                return await client.say(":negative_squared_cross_mark: {}".format(r['Message']))
+            else:
+                r=r['RAW'][coin][currency]
+                e = discord.Embed(description=":money_with_wings: The current **{}** price in **{}** is ***{}***".format(coin,currency,r['PRICE']))
+                e.add_field(name="24h High",value=r['HIGH24HOUR'])
+                e.add_field(name="24h Low",value=r['LOW24HOUR'])
+                e.colour=0x2ecc71
+                cng = "\U000025b2 {}%"
+                if r['CHANGEDAY']<0:
+                    e.colour=0xe74c3c
+                    cng = "\U000025bc {}%"
+                e.add_field(name="24h Change",value=cng.format("%.2f"%r['CHANGEPCT24HOUR']))
+                return await client.say(embed=e)
 
 # LEGACY CRYPTO COMMANDS. KEPT AROUND FOR REFERENCE
 
