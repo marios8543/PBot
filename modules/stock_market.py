@@ -64,22 +64,22 @@ async def base_call(ctx,sym,ival,func):
             return await client.say(":negative_squared_cross_mark: {}".format(r['Error Message']))
 
 @client.group(pass_context=True,invoke_without_command=True)
-async def stock(ctx,sym:str=None,ival=15):
+async def stock(ctx,sym=None,ival=15):
     if not ctx.invoked_subcommand:
         await ctx.invoke(intraday,sym=sym,ival=ival)
 
 @stock.command(pass_context=True)
-async def intraday(ctx,sym,ival=15):
+async def intraday(ctx,sym=None,ival=15):
     return await base_call(ctx,sym,None,'TIME_SERIES_INTRADAY')
 
 @stock.command(pass_context=True)
-async def daily(ctx,sym):
+async def daily(ctx,sym=None):
     return await base_call(ctx,sym,None,'TIME_SERIES_DAILY')
 
 @stock.command(pass_context=True)
-async def weekly(ctx,sym):
+async def weekly(ctx,sym=None):
     return await base_call(ctx,sym,None,'TIME_SERIES_WEEKLY')
 
 @stock.command(pass_context=True)
-async def monthly(ctx,sym):
+async def monthly(ctx,sym=None):
     return await base_call(ctx,sym,None,'TIME_SERIES_MONTHLY')
