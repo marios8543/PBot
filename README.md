@@ -97,8 +97,8 @@ If you want to use >PBot you can use this [invite link](https://discordapp.com/a
     - daily *symbol*
     - weekly *symbol*
     - monthly *symbol*
-     \Returns stock exchange data for the symbol queried (Default is intraday e.g ">>stock MSFT" is the same as ">>stock intraday MSFT")
-  - forex *coin1/coin2* (or *coin1* *coin2*)\Returns the current exchange rate for 1*coin* (You can also pass a number before coin1 to convert to coin2 e.g ">>forex 5USD/JPY" or ">>forex 5USD JPY"
+     </br>Returns stock exchange data for the symbol queried (Default is intraday e.g ">>stock MSFT" is the same as ">>stock intraday MSFT")
+  - forex *coin1/coin2* (or *coin1* *coin2*)</br>Returns the current exchange rate for 1*coin* (You can also pass a number before coin1 to convert to coin2 e.g ">>forex 5USD/JPY" or ">>forex 5USD JPY"
   - forex rates *coin* Returns the current rates for 1*coin* in a lot of currencies
 
 
