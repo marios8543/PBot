@@ -60,8 +60,6 @@ If you want to use >PBot you can use this [invite link](https://discordapp.com/a
   Creates a poll users can vote on. Instructions in command.
     - vote kick *tag* Vote-kicks the user. Duration is 5 minutes and can't be changed.
     - vote kill Cancels the vote running in that channel. Only the vote creator and people with the Manage Messages permission use this.
-  - crypto *coin* *currency*
-  Gets the price of a coin in the currency specified (USD by default). Use each coin's 3/4 letter code not the name (ex. BTC instead of Bitcoin).
   - hastebin
   Creates a paste on hastebin.com
   - mcafee
@@ -90,5 +88,18 @@ If you want to use >PBot you can use this [invite link](https://discordapp.com/a
   - login Logs you in with your username and password and saves the session so you can use the client
   - post Make a post. It will guide you step by step.
   - feed Get a feed of recent posts.
-    
+  
+- Currencies & Stocks
+  - crypto *coin* *currency*
+  Gets the price of a coin in the currency specified (USD by default). Use each coin's 3/4 letter code not the name (ex. BTC instead of Bitcoin).
+  - stock
+    - intraday *symbol*
+    - daily *symbol*
+    - weekly *symbol*
+    - monthly *symbol*
+  Returns stock exchange data for the symbol queried (Default is intraday e.g ">>stock MSFT" is the same as ">>stock intraday MSFT")
+  - forex *coin1/coin2* (or coin1 coin2) Returns the current exchange rate for 1*coin* (You can also pass a number before coin1 to convert to coin2 e.g ">>forex 5USD/JPY" or ">>forex 5USD JPY"
+  - forex rates *coin* Returns the current rates for 1*coin* in a lot of currencies
+
+
 More coming soon...
