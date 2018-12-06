@@ -35,8 +35,8 @@ async def forex(ctx,coin=None,coin2=None):
     if (coin[0] or 'x').isdigit():
         qty = int("".join([i for i in coin if i.isdigit()]))
         coin = "".join([i for i in coin if i.isalpha()])
-    if coin in coins['rates'] and coin2 in coins['rates']:
-        r = coins['rates'][coin2]/coins['rates'][coin]
+    if coin.upper() in coins['rates'] and coin2.upper() in coins['rates']:
+        r = coins['rates'][coin2.upper()]/coins['rates'][coin.upper()]
         if qty>1:
             r = r*qty
     else:
