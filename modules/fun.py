@@ -157,7 +157,7 @@ client.loop.create_task(update_playing())
 
 @client.command()
 async def btx():
-    async with json.loads(open("/misc/verbs.json","r").read()) as f:
+    async with json.loads(open("verbs.json","r").read()) as f:
         x = random.choice(f)
         y = random.choice(f)
         if x!=y:
