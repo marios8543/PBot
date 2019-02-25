@@ -155,6 +155,11 @@ async def update_playing():
         await asyncio.sleep(600)
 client.loop.create_task(update_playing())
 
-    
-
-
+@client.command()
+async def btx():
+    async with json.loads(open("/misc/verbs.json","r").read()) as f:
+        x = random.choice(f)
+        y = random.choice(f)
+        if x!=y:
+            return client.say("Born to {} forced to {}".format(x,y))
+        return client.say("You lose")
