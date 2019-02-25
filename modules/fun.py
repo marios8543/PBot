@@ -161,5 +161,5 @@ async def btx():
     x = random.choice(f)
     y = random.choice(f)
     if x!=y:
-        return client.say("Born to {} forced to {}".format(x,y))
-    return client.say("You lose")
+        return await client.say("Born to {} forced to {}".format(x,y))
+    return await client.say("You lose")
