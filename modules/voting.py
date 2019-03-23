@@ -4,10 +4,11 @@ choice_emojis = [':regional_indicator_a:',':regional_indicator_b:',':regional_in
 votes_running = {}
 
 def vote_running(ctx):
-    for vote in votes_running:
-        if votes_running[vote].channel is ctx.message.channel:
-            return votes_running[vote]
-    
+    for k,v in votes_running.items():
+        if v.channel is ctx.message.channel:
+            v.id = k
+            return v
+
 class Vote():
     id = ""
     user = ""
@@ -61,13 +62,14 @@ class Vote():
         else:
             duration = str(self.duration)+' seconds remaining'
         embed.set_footer(text=duration)
-        embed.fields.clear()   
+        embed.fields.clear()
         for option in self.options:
             embed.add_field(name=option['emoji']+' '+option['option'],value='0 votes')
         self.embed_obj = embed
         if send==1:
             self.embed = await client.send_message(self.channel,embed=embed)
             votes_running[self.embed.id] = self
+            self.id = self.embed.id
             return {'embed':embed,'msg':self.embed}
         else:
             return embed
@@ -93,7 +95,7 @@ class Vote():
             else:
                 update_str = str(len(self.options[option]['votes']))+' votes'	
             embed.set_field_at(option,name=embed.fields[option].name,value=update_str)
-            await client.edit_message(self.embed,embed=embed)			
+            await client.edit_message(self.embed,embed=embed)
             return 1
 
     def get_winner(self,make_embed=0):
@@ -120,34 +122,46 @@ class Vote():
 
     def kill(self):
         self.running=0
-        return 1   
+        return 1
 
 
 
 @client.group(pass_context=True)
-async def vote(ctx):    
+async def vote(ctx):
     if ctx.invoked_subcommand is None:
-        if vote_running(ctx):
-            return await client.say(':negative_squared_cross_mark: You can only have one vote running per channel')            
+        running = vote_running(ctx)
+        if running:
+            key = running.id
+            await client.delete_message(running.embed)
+            msg = await client.say('Vote already running in this channel',embed=running.embed_obj)
+            for option in running.options:
+                await client.add_reaction(msg,emoji_unicode[option['emoji']])
+            votes_running[key].embed = msg
+            return
         question = ""
         options = []
         duration = 0
         #Argument parsing
-        await client.say(":pencil: Enter the vote question...")
+        tbd = []
+        tbd.append((await client.say(":pencil: Enter the vote question...")))
         msg = await client.wait_for_message(timeout=60,author=ctx.message.author,channel=ctx.message.channel)
         if msg:
             question = msg.content
+            if question=='cancel':
+                return await client.say(':zzz: Cancelled...')
         else:
             return await client.say(':zzz: Vote call timed out...')
-        await client.say(':pencil: Ok now enter your choices seperated with `//`...')
+        tbd.append(msg)
+        tbd.append((await client.say(':pencil: Ok now enter your choices seperated with `//`...')))
         msg = await client.wait_for_message(timeout=60,author=ctx.message.author,channel=ctx.message.channel)
         if msg:
             options = msg.content.split('//')
-            if len(options)>5:
-                return client.say(":negative_squared_cross_mark: You can't have more than 5 options")   
+            if len(options)>5 or '//' not in msg.content:
+                return await client.say(":negative_squared_cross_mark: You can't have 0 or more than 5 options")
         else:
             return await client.say(':zzz: Vote call timed out...')
-        await client.say(':pencil: Ok finally how long do you want your vote to last. Type just the number in seconds. Max is {} minutes'.format(config['max_softban']))
+        tbd.append(msg)
+        tbd.append((await client.say(':pencil: Ok finally how long do you want your vote to last. Type just the number in seconds. Max is {} minutes'.format(config['max_softban']))))
         msg = await client.wait_for_message(timeout=60,author=ctx.message.author,channel=ctx.message.channel)
         if msg:
             duration = int(''.join(filter(str.isdigit, msg.content)))
@@ -155,19 +169,20 @@ async def vote(ctx):
                 return await client.say(':negative_squared_cross_mark: Max vote time is {} minutes'.format(config['max_softban']))
         else:
             return await client.say(':zzz: Vote call timed out...')
+        tbd.append(msg)
+        await client.delete_messages(tbd)
         #Vote creation 
         vote = Vote(ctx,question,options,duration)
-        msg = await vote.make_embed()
-        msg = msg['msg']
+        key = (await vote.make_embed())['msg'].id
         for option in vote.options:
-            await client.add_reaction(msg,emoji_unicode[option['emoji']])
+            await client.add_reaction(votes_running[key].embed,emoji_unicode[option['emoji']])
         #Timer implementation (rewrite pending)
         elapsed = 0
         while vote.duration-1>=elapsed:
             if vote.running!=1:
-                await client.delete_message(msg)        
+                await client.delete_message(votes_running[key].embed)
                 winner = vote.get_winner(make_embed=1)
-                await client.say(embed=winner)    
+                await client.say(embed=winner)
                 return await client.say(':anger: Vote has been canceled')
             await asyncio.sleep(1)
             elapsed = elapsed+1
@@ -178,13 +193,16 @@ async def vote(ctx):
                 remaining = str(remaining)+' seconds remaining'
             if vote.embed_obj.footer.text!=remaining:
                 vote.embed_obj.set_footer(text=remaining)
-                await client.edit_message(msg,embed=vote.embed_obj) 
-        await client.delete_message(msg)        
+                try:
+                    await client.edit_message(votes_running[key].embed,embed=vote.embed_obj)
+                except Exception:
+                    pass
+        await client.delete_message(votes_running[key])
         winner = vote.get_winner(make_embed=1)
         await client.say(embed=winner)
         return 1
 
-
+"""
 @vote.command(pass_context=True)
 async def kick(ctx):
     if vote_running(ctx):
@@ -226,7 +244,7 @@ async def kick(ctx):
     else:
         await client.say(':negative_squared_cross_mark: Vote-kicking is disabled in this server...')    
     return 1      
-
+"""
 
 @vote.command(pass_context=True)
 async def kill(ctx):
@@ -245,22 +263,38 @@ async def kill(ctx):
 async def on_reaction_add(reaction, user):
     if user.id==client.user.id:
         return	
+    vote = None
     if reaction.message.id in votes_running.keys():
         vote = votes_running[reaction.message.id]
-        for option in vote.options:
-            if user.id in option['votes']:
-                return
-        for idx,options in enumerate(vote.options):
-            if emoji_unicode[options['emoji']] == reaction.emoji:
-                await vote.add_vote(user,idx)
+    else:
+        for v in votes_running:
+            if reaction.message.id==votes_running[v].embed.id:
+                vote = votes_running[v]
+                break
+    if not vote:
+        return
+    for option in vote.options:
+        if user.id in option['votes']:
+            return
+    for idx,options in enumerate(vote.options):
+        if emoji_unicode[options['emoji']] == reaction.emoji:
+            await vote.add_vote(user,idx)
 
 
 @client.event
 async def on_reaction_remove(reaction,user):
     if user.id==client.user.id:
-        return
+        return  
+    vote = None
     if reaction.message.id in votes_running.keys():
         vote = votes_running[reaction.message.id]
-        for idx,options in enumerate(vote.options):
-            if emoji_unicode[options['emoji']] == reaction.emoji:
-                await vote.remove_vote(user,idx)
+    else:
+        for v in votes_running:
+            if reaction.message.id==votes_running[v].embed.id:
+                vote = votes_running[v]
+                break
+    if not vote:
+        return
+    for idx,options in enumerate(vote.options):
+        if emoji_unicode[options['emoji']] == reaction.emoji:
+            await vote.remove_vote(user,idx)
