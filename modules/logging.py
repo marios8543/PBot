@@ -70,7 +70,9 @@ async def on_message_delete(message):
                 img = BytesIO(await res.read())
                 img.seek(0)
                 msg = await client.send_file(client.get_channel('515844409905119262'),img)
-                await client.send_message(client.get_channel(str(srv.log_channel)),msg.attachments[0]['url'])
+                e = discord.Embed()
+                e.set_image(url=msg.attachments[0]['url'])
+                await client.send_message(client.get_channel(str(srv.log_channel)),embed=e)
         return
 
 #Message edit
