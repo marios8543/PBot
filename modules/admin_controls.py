@@ -72,13 +72,28 @@ async def check(ctx, arg):
 
 
 @client.command(pass_context=True)
-async def massdelete(ctx,msgfrom,msgto=None):
+async def massdelete(ctx,msgfrom=None,msgto=None):
     if Utils.check_perms_ctx(ctx,'manage_messages'):
+        if not msgfrom:
+            return await client.say("""
+            __**Usage:**__
+            >>massdelete *# of messages above to be deleted (Max:100)*
+            >>massdelete *message_id* *# of messages above that ID to be deleted*
+            >>massdelete *message_id* *message_id* (Messages between those IDs will be deleted)
+            """)
         channel = ctx.message.channel
         if msgto:
-            message_after = await client.get_message(channel,msgfrom)
-            message_before = await client.get_message(channel,msgto)
-            del_list = await client.purge_from(channel=channel, before=message_before, after=message_after)
+            if len(msgto)<=3:
+                try:
+                    msgto = int(msgto)
+                except Exception:
+                    return await client.say("Invalid input")
+                message_before = await client.get_message(channel,msgfrom)
+                del_list = await client.purge_from(channel=channel, before=message_before, limit=msgto)
+            else:
+                message_after = await client.get_message(channel,msgfrom)
+                message_before = await client.get_message(channel,msgto)
+                del_list = await client.purge_from(channel=channel, before=message_before, after=message_after)
         else:
             try:
                 msgfrom = int(msgfrom)
