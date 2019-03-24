@@ -197,7 +197,7 @@ async def vote(ctx):
                     await client.edit_message(votes_running[key].embed,embed=vote.embed_obj)
                 except Exception:
                     pass
-        await client.delete_message(votes_running[key])
+        await client.delete_message(votes_running[key].embed)
         winner = vote.get_winner(make_embed=1)
         await client.say(embed=winner)
         return 1
