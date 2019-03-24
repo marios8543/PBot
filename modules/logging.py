@@ -60,7 +60,7 @@ async def on_message_delete(message):
         embed=discord.Embed(title=":exclamation: Deleted message", color=0xff0000)
         embed.add_field(name="Message author", value="{} (ID: {})".format(message.author,message.author.id), inline=False)
         embed.add_field(name="Channel", value=str(message.channel.name), inline=False)
-        embed.add_field(name="Content", value=str(message.content))
+        embed.add_field(name="Content", value=str(message.content if message.content else 'No message'))
         embed.set_footer(text=str(message.timestamp)+' {} attachment(s) below'.format(len(message.attachments)) if len(message.attachments)>0 else '')
         await client.send_message(client.get_channel(str(srv.log_channel)),embed=embed)
         for e in message.embeds:
