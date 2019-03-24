@@ -1,4 +1,5 @@
 from pbot_utils import *
+from asyncio import sleep
 
 #member check command
 @client.command(pass_context=True)
@@ -71,16 +72,27 @@ async def check(ctx, arg):
 
 
 @client.command(pass_context=True)
-async def massdelete(ctx,msgfrom,msgto):
-	server = ctx.message.server
-	channel = ctx.message.channel
-	message_after = await client.get_message(channel,msgfrom)
-	message_before = await client.get_message(channel,msgto)
-	if Utils.check_perms_ctx(ctx,'manage_messages'):
-	     del_list = await client.purge_from(channel=channel,limit=100, check=None, before=message_before, after=message_after, around=None)
-	     await client.say(':white_check_mark: Successfully deleted '+str(len(del_list))+' messages !')
-	else:
-	   await client.say(config['error_permissions'].format('Manage Messages'))
+async def massdelete(ctx,msgfrom,msgto=None):
+    if Utils.check_perms_ctx(ctx,'manage_messages'):
+        channel = ctx.message.channel
+        if msgto:
+            message_after = await client.get_message(channel,msgfrom)
+            message_before = await client.get_message(channel,msgto)
+            del_list = await client.purge_from(channel=channel, before=message_before, after=message_after)
+        else:
+            try:
+                msgfrom = int(msgfrom)
+            except Exception:
+                return await client.say("Invalid input")
+            if msgfrom<=100:
+                del_list = await client.purge_from(channel=channel,limit=msgfrom)
+            else:
+                await client.say(":negative_squared_cross_mark: You can't massdelete more than 100 messages at a time")
+        msg = await client.say(':white_check_mark: Successfully deleted '+str(len(del_list))+' messages !')
+        await sleep(2)
+        await client.delete_message(msg)
+    else:
+       await client.say(config['error_permissions'].format('Manage Messages'))
 
 
 @client.command(pass_context=True)
