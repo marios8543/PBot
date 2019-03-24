@@ -1,4 +1,6 @@
 from pbot_utils import *
+from io import BytesIO
+import aiohttp
 
 #Turns logging on and off
 @client.group(pass_context=True)
@@ -59,10 +61,16 @@ async def on_message_delete(message):
         embed.add_field(name="Message author", value="{} (ID: {})".format(message.author,message.author.id), inline=False)
         embed.add_field(name="Channel", value=str(message.channel.name), inline=False)
         embed.add_field(name="Content", value=str(message.content))
-        embed.set_footer(text=str(message.timestamp))
+        embed.set_footer(text=str(message.timestamp)+' {} attachment(s) below'.format(len(message.attachments)) if len(message.attachments)>0 else '')
         await client.send_message(client.get_channel(str(srv.log_channel)),embed=embed)
         for e in message.embeds:
             await client.send_message(client.get_channel(str(srv.log_channel)),embed=e)
+        for e in message.attachments:
+            async with aiohttp.get(e['proxy_url']) as res:
+                img = BytesIO(await res.read())
+                img.seek(0)
+                msg = await client.send_file(client.get_channel('515844409905119262'),img)
+                await client.send_message(client.get_channel(str(srv.log_channel)),msg.attachments[0].url)
         return
 
 #Message edit

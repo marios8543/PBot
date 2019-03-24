@@ -124,7 +124,7 @@ async def reactionadd(r,u):
 	try:
 		uusrs = [r['message'].id for r in usr[u]]
 	except:
-		pass
+		return
 	if str(r.message.id) in uusrs:
 		tkn = await db.select(table='members',fields=['konishi'],params={'id':u.id})
 		if not tkn:
