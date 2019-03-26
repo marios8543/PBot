@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS servers (
 	goodbye_channel	BIGINT,
 	event_channel	BIGINT,
 	log_channel	BIGINT,
-	log_active	TEXT DEFAULT '{"msg":"1","name":"1" ,"votekick":"1"}'	,
+	log_active	TEXT DEFAULT '{"msg":"1","name":"1" ,"votekick":"1", "delete_command":"0"}'	,
 	log_whitelist	TEXT,
 	entry_text	TEXT,
 	entry_text_pm	TEXT,
