@@ -14,7 +14,6 @@ async def on_command_completion(command,ctx):
             await srv.update()
         async with db.lock:
             await db.db.execute("UPDATE commands SET usages = usages+1 WHERE command=%s AND server_id=%s",(command.name,ctx.message.server.id,))
-            await db.db.execute("UPDATE commands SET usages = usages+1 WHERE command=%s",(command.name,))
 
 @client.command(pass_context=True)
 async def setdelete(ctx):
@@ -36,6 +35,8 @@ async def setdelete(ctx):
 
 @client.group(pass_context=True)
 async def analytics(ctx):
+    if not Utils.check_perms_ctx(ctx,'manage_messages'):
+        return await client.say(config['error_permissions'].format('Manage Messages'))
     if ctx.invoked_subcommand:
         return
     async with db.lock:
@@ -46,7 +47,7 @@ async def analytics(ctx):
         for i in res:
             msg_str+="`{}: {} usages`\n".format(i[0],i[1])
         return await client.say(msg_str)
-
+"""
 @analytics.command(pass_context=True)
 async def bot(ctx):
     async with db.lock:
@@ -58,3 +59,4 @@ async def bot(ctx):
         for i in res:
             msg_str+="`{}: {} usages`\n".format(i[0],i[1])
         return await client.say(msg_str)
+"""
