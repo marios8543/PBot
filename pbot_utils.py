@@ -57,6 +57,13 @@ async def log_servers():
         print("Logged missing server ",m)
     return 1
 
+async def log_commands():
+    for i in client.servers:
+        i = i.id
+        for ii in client.commands:
+            async with db.lock:
+                await db.db.execute("INSERT INTO commands(command,server_id) SELECT %s,%s WHERE NOT EXISTS (SELECT command FROM commands WHERE command = %s AND server_id=%s)",(ii,i,ii,i,))
+
 client = Bot(description="pbot_public", command_prefix=">>")
 warn_whitelist = config['warn_whitelist']
 logging_blacklist = []
@@ -84,6 +91,7 @@ loop.run_until_complete(initialize())
 @client.event
 async def on_ready():
     logging_blacklist.append(client.user.id)
+    await log_commands()
     print('Logged in as '+client.user.name+' (ID:'+client.user.id+') | Connected to '+str(len(client.servers))+' servers | Connected to '+str(len(set(client.get_all_members())))+' users')
 
 def ascii_convert(s):

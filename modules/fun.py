@@ -146,8 +146,9 @@ async def submit(ctx,*name):
 async def update_playing():
     await client.wait_until_ready()
     while not client.is_closed:
-        await db.db.execute("SELECT usr_id,title FROM playing_status ORDER BY RANDOM() LIMIT 1")
-        res = await db.db.fetchone()
+        async with db.lock:
+            await db.db.execute("SELECT usr_id,title FROM playing_status ORDER BY RANDOM() LIMIT 1")
+            res = await db.db.fetchone()
         if res:
             play["user"] = res[0]
             play["play"] = res[1]

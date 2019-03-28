@@ -40,5 +40,12 @@ CREATE TABLE IF NOT EXISTS playing_status (
 	usr_id BIGINT,
 	title TEXT
 );
+""",
+"""
+CREATE TABLE IF NOT EXISTS commands (
+	command TEXT,
+	usages BIGINT DEFAULT 0,
+	server_id BIGINT DEFAULT NULL
+);
 """
 ]

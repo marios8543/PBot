@@ -34,6 +34,7 @@ class ORM():
 	def __init__(self,db,conn):
 		self.db = db
 		self.conn = conn
+		self.lock = asyncio.Lock()
 
 	async def select(self,table='',fields='*',params=''):
 		if table=='':
@@ -58,9 +59,10 @@ class ORM():
 			return	
 		sql = "SELECT {fields_str} FROM {table} {params_str}".format(**{'fields_str':fields_str,'table':table,'params_str':params_str})
 		#print(sql)
-		await self.db.execute(sql,params_arr)
-		result = Result()
-		resp = await self.db.fetchone()
+		async with self.lock:
+			await self.db.execute(sql,params_arr)
+			result = Result()
+			resp = await self.db.fetchone()
 		if resp==None:
 			return
 		for idx,res in enumerate(resp):
@@ -92,8 +94,9 @@ class ORM():
 			return		
 		sql = "SELECT {fields_str} FROM {table} {params_str}".format(**{'fields_str':fields_str,'table':table,'params_str':params_str})
 		#print(sql)
-		await self.db.execute(sql,params_arr)
-		resp = await self.db.fetchall()
+		async with self.lock:
+			await self.db.execute(sql,params_arr)
+			resp = await self.db.fetchall()
 		if resp==None:
 			return
 		arr = []
@@ -121,9 +124,10 @@ class ORM():
 		value_str = ",".join(value_str)
 		prcnt_str = ",".join(prcnt_str)
 		sql = "INSERT INTO {table}({value_str}) values({prcnt_str})".format(**{'table':table,'value_str':value_str,'prcnt_str':prcnt_str})
-		if await self.db.execute(sql,value_arr):
-			await self.conn.commit()
-			return 1
+		async with self.lock:
+			if await self.db.execute(sql,value_arr):
+				await self.conn.commit()
+				return 1
 
 	async def update(self,table="",values={},params={}):
 		if table=='':
@@ -155,8 +159,9 @@ class ORM():
 		params_str = params_str[:-3]
 		sql = "UPDATE {table} SET {value_str} WHERE {params_str}".format(**{'table':table,'value_str':value_str,'params_str':params_str})
 		#print(sql)
-		await self.db.execute(sql,(value_arr+param_arr))
-		return 1
+		async with self.lock:
+			await self.db.execute(sql,(value_arr+param_arr))
+			return 1
 
 	async def delete(self,table='',values='',params={}):
 		if table=='':
@@ -168,5 +173,6 @@ class ORM():
 			params_str = params_str+" {key}={value} AND".format(**{'key':param,'value':params[param]})
 		params_str = params_str[:-3]
 		sql = "DELETE {values} FROM {table} WHERE {params_str}".format(**{'values':values,'table':table,'params_str':params_str})
-		await self.db.execute(sql)
-		return 1	
+		async with self.lock:
+			await self.db.execute(sql)
+			return 1	
