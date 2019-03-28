@@ -107,7 +107,7 @@ class Vote():
         else:
             winner = votes.index(max(votes))
         if make_embed==0:
-            votes_running.pop(self.embed.id,None)
+            votes_running.pop(self.id,None)
             return winner
         if winner==6:
             embed=discord.Embed(title='The vote is a draw!!!')
@@ -117,7 +117,7 @@ class Vote():
         for option in self.options:
             embed.add_field(name=option['option'],value=str(len(option['votes']))+' votes')
         embed.set_footer(text='Vote called by '+self.user.name+'#'+self.user.discriminator)
-        votes_running.pop(self.embed.id,None)
+        votes_running.pop(self.id,None)
         return embed
 
     def kill(self):
