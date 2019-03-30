@@ -37,7 +37,7 @@ async def plot(data):
     fig = plt.gcf()
     fig.savefig(sio,format='png')
     sio.seek(0)
-    msg = await client.send_file(client.get_channel('515844409905119262'),sio)
+    msg = await client.send_file(client.get_channel('561545117136191501'),sio)
     return msg.attachments[0]['url']
 
 async def base_call(ctx,sym,ival,func):

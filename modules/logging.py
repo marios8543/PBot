@@ -70,7 +70,7 @@ async def on_message_delete(message):
                 img = BytesIO(await res.read())
                 img.seek(0)
                 img.name = 'deleted_image.'+e['proxy_url'].split('.')[-1]
-                msg = await client.send_file(client.get_channel('515844409905119262'),img)
+                msg = await client.send_file(client.get_channel('561545117136191501'),img)
                 await client.send_message(client.get_channel(str(srv.log_channel)),msg.attachments[0]['url'])
         return
 
