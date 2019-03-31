@@ -113,4 +113,4 @@ async def on_member_update(before, after):
         if not srv:
             return
         if srv.log_active['name']:
-            return await client.send_message(client.get_channel(str(srv.event_channel)), ':anger: <@!'+before.id+'> changed their name from **'+before.name+'** to **'+after.name+'**')     
+            return await client.send_message(client.get_channel(str(srv.event_channel)), ':anger: '+str(before)+' changed their name from **'+before.name+'** to **'+after.name+'**')     
