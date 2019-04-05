@@ -62,24 +62,61 @@ async def clearwarnings(ctx,arg):
     else:
         await client.say(config['error_permissions'].format('Ban Member'))
 
+muted_users = []
 
 @client.command(pass_context=True)
-async def softban(ctx,arg,arg2):
+async def mute(ctx,arg,time=0):
     server = ctx.message.server
-    if Utils.check_perms_ctx(ctx,'kick_members'):
-        if int(arg2) <= int(config['max_softban']):
-            unverified = discord.utils.get(ctx.message.server.roles, name="Unverified")
-            if not ctx.message.raw_mentions:
-                user_id = arg
-            else:
-                user_id = ''.join(ctx.message.raw_mentions)
-            time = int(arg2)*60
-            await client.add_roles(server.get_member(user_id), unverified)
-            await client.say(':white_check_mark: <@!'+str(user_id)+'> has been denied access for '+str(arg2)+' minutes...')
-            await asyncio.sleep(time)
-            await client.remove_roles(server.get_member(user_id), unverified)
+    if Utils.check_perms_ctx(ctx,'manage_roles'):
+        unverified = discord.utils.get(ctx.message.server.roles, name="Unverified")
+        try:
+            time = int(time)
+        except Exception:
+            return await client.say(":negative_squared_cross_mark: Invalid time provided")
+        if not ctx.message.raw_mentions:
+            user_id = arg
+        else:
+            user_id = ''.join(ctx.message.raw_mentions)
+        member = server.get_member(user_id)
+        if not member:
+            return await client.say(":negative_squared_cross_mark: Invalid member provided")
+        if time==0:
+            await client.add_roles(member,unverified)
+            muted_users.append(user_id)
+            return await client.say(":white_check_mark: {} has been muted for an indefinite amount of time".format(str(member)))
+        if time <= int(config['max_softban']):
+            await client.add_roles(member,unverified)
+            muted_users.append(user_id)
+            await client.say(":white_check_mark: {} has been muted for {} minutes".format(str(member),time))
+            for i in range(time*60):
+                if user_id in muted_users:
+                    await asyncio.sleep(1)
+                else:
+                    return
+            muted_users.remove(user_id)
+            await client.remove_roles(member,unverified)
             await client.say('<@!'+str(user_id)+'> is here again!')
         else:
             await client.say(':negative_squared_cross_mark: Maximum softban time is {} minutes'.format(config['max_softban']))
     else:
         await client.say(config['error_permissions'].format('Kick Members'))
+
+@client.command(pass_context=True)
+async def unmute(ctx,arg):
+    if Utils.check_perms_ctx(ctx,'manage_roles'):
+        unverified = discord.utils.get(ctx.message.server.roles, name="Unverified")
+        if not ctx.message.raw_mentions:
+            user_id = arg
+        else:
+            user_id = ''.join(ctx.message.raw_mentions)
+        member = ctx.message.server.get_member(user_id)
+        if not member:
+            return await client.say(":negative_squared_cross_mark: Invalid member provided")
+        if user_id in muted_users or unverified in member.roles:
+            try:
+                muted_users.remove(user_id)
+            except Exception:
+                pass
+            await client.remove_roles(member,unverified)
+            return await client.say(":white_check_mark: {} has been unmuted".format(str(member)))
+
