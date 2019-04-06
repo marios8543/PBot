@@ -39,7 +39,7 @@ async def upcoming(ctx,mon=2):
         ret = "***Upcoming birthdays in __{}__ for the next __{}__ month(s)\n\n***".format(ctx.message.server.name,mon)
         for i in res:
             try:
-                ret+="⮞ __**{}**__ on the **{}** of **{}**".format(ctx.message.server.get_member(str(i[0])),i[1].day,i[1].strftime("%B"))
+                ret+="⮞ __**{}**__ on the **{}** of **{}**\n".format(ctx.message.server.get_member(str(i[0])),i[1].day,i[1].strftime("%B"))
             except Exception:
                 continue
         return await client.say(ret)
@@ -81,7 +81,7 @@ async def bday_notifs():
                     srv = await Utils.get_server(str(res.server_id))
                     try:
                         usr = srv.disc_server.get_member(str(res.id))
-                        await client.send_message(client.get_channel(srv.event_channel),":fireworks: It's {}'s birthday today. Happy birthday {} :D".format(usr,usr.name))
+                        await client.send_message(client.get_channel(srv.event_channel),":fireworks: It's <@!{}>'s birthday today. Happy birthday {} :D".format(usr.id,usr.name))
                     except Exception:
                         continue
         except Exception:

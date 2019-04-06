@@ -47,7 +47,7 @@ async def on_message_delete(message):
     if message.channel.is_private:
         return
     srv = await Utils.get_server(message.server.id)
-    if not srv:
+    if not srv or not srv.log_channel:
         return    
     if type(srv.log_whitelist)==list:
         whitelist=srv.log_whitelist
@@ -82,7 +82,7 @@ async def on_message_edit(before, after):
     if before.channel.is_private:
         return
     srv = await Utils.get_server(before.server.id)
-    if not srv:
+    if not srv or not srv.log_channel:
         return
     if type(srv.log_whitelist)==list:
         whitelist=srv.log_whitelist
