@@ -110,7 +110,7 @@ class User():
     verified = 0
     present = 0
 
-    def __init__(self,id,server_id,warnings,verified,present):
+    def __init__(self,id,server_id,warnings,verified,present,bday):
         self.id = id
         self.server_id = server_id
         self.warnings = warnings
@@ -118,13 +118,15 @@ class User():
         self.disc_user = client.get_server(self.server_id).get_member(id)
         self.name = self.disc_user.name+'#'+self.disc_user.discriminator
         self.join_date = self.disc_user.joined_at
+        self.birthday = bday
         
 
     async def update(self):
         update_dic = {
             'warns':self.warnings,
             'verified':self.verified,
-            'in_server':self.present
+            'in_server':self.present,
+            'birthday':self.birthday
         }
         await db.update(table='members',values=update_dic,params={'id':self.id,'server_id':self.server_id})
         return 1
@@ -176,11 +178,11 @@ class Server():
     async def get_member(self,id):
         res = await db.select(table='members',fields=[
             'warns','verified',
-            'in_server'],params={'server_id':self.id,
+            'in_server','birthday'],params={'server_id':self.id,
             'id':id})
         if res:
-            user = User(id,self.id,res.warns,res.verified,res.in_server)
-            user.server = await Utils.get_server(self.id)
+            user = User(id,self.id,res.warns,res.verified,res.in_server,res.birthday)
+            user.server = self
             return user
 
     async def make_member(self,id,verified=0):

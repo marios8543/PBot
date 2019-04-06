@@ -22,7 +22,8 @@ CREATE TABLE IF NOT EXISTS members (
 	in_server	INTEGER DEFAULT 1,
 	warns	INTEGER DEFAULT 0,
 	konishi TEXT DEFAULT NULL,
-	crypto TEXT DEFAULT NULL
+	crypto TEXT DEFAULT NULL,
+	birthday date NULL
 );
 """
 ,"""

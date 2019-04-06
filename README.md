@@ -32,6 +32,8 @@ If you want to use >PBot you can use this [invite link](https://discordapp.com/a
     Use **{member_name}** and **{server_name}** accordingly. It's good to include that they need to click on :+1: to get verified.
     - goodbye
     Sets the goodbye message (Use **{member_name}** accordingly).
+  - setdelete
+  Sets so that the message that invoked a command gets deleted automatically after a couple seconds
 
 - Admin Commands:
   - check *tag*  
@@ -46,10 +48,14 @@ If you want to use >PBot you can use this [invite link](https://discordapp.com/a
   Deletes all the messages between 2 message IDs given
   - dashboard  
   Access the dashboard for your server and change bot settings
-  - softban *tag *mins*  
-  Makes a member unverified for a set number of minutes (Max 60)
+  - mute *tag* *mins (optional)*  
+  Makes a member unverified for a set number of minutes (Max 60) or an indefinite amount of time
+  - unmute *tag*
+  Unmutes the member tagged
   - nickname *tag* *nickname*  
   Sets the nickname for a member
+  - analytics
+  Posts the most used commands of the bot in the specific server
 
 - Fun Commands:
   - bsf  
@@ -100,6 +106,13 @@ If you want to use >PBot you can use this [invite link](https://discordapp.com/a
      </br>Returns stock exchange data for the symbol queried (Default is intraday e.g ">>stock MSFT" is the same as ">>stock intraday MSFT")
   - forex *coin1/coin2* (or *coin1* *coin2*)</br>Returns the current exchange rate for 1*coin* (You can also pass a number before coin1 to convert to coin2 e.g ">>forex 5USD/JPY" or ">>forex 5USD JPY"
   - forex rates *coin* Returns the current rates for 1*coin* in a lot of currencies
+
+- Birthdays
+  - birthday *tag* Gives you the tagged user's birthday
+    - upcoming *months (Default:2)* Gives the upcoming birthdays in the server
+  - setbirthday *DD/MM* Sets your birthday to the specified date
+  </br>Birthdays you set are only visible in the server you set them in
+  </br>The bot will also post a notification in the event channel when it's someone's birthday
 
 
 More coming soon...
