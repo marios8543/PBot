@@ -31,7 +31,6 @@ async def upcoming(ctx,mon=2):
     curr_date = curr_date.replace(year=1970)
     upcm_date = (datetime.now()+timedelta(days=mon*30 if curr_date.month+mon<=12 else (12-curr_date.month)*30)).date()
     upcm_date = upcm_date.replace(year=1970)
-    print(curr_date,upcm_date)
     async with db.lock:
         await db.db.execute("SELECT id,birthday FROM members WHERE server_id=%s AND birthday BETWEEN %s AND %s",(int(ctx.message.server.id),curr_date,upcm_date,))
         res = await db.db.fetchall()

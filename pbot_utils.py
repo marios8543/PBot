@@ -33,6 +33,7 @@ def timestamp():
     return timestamp
 
 async def log_members():
+    print("Logging missing members")
     res = await db.selectmany(table='members',fields=['id','server_id'])
     res2 = set(client.get_all_members())
     members = []
@@ -42,12 +43,14 @@ async def log_members():
     for r in res2:
         members.append((int(r.id),int(r.server.id)))
     missing = set(members)-set(db_members)
+    print(missing)
     for m in missing:
         await db.insert(table='members',values={'id':m[0],'server_id':m[1],'verified':1})
         print('Saved missing member {} (ServerID: {})'.format(m[0],m[1]))
     return 1
 
 async def log_servers():
+    print("Logging missing servers")
     res = await db.selectmany(table='servers',fields=['id'])
     db_servers = [r.id for r in res]
     servers = [int(s.id) for s in client.servers]
@@ -58,6 +61,7 @@ async def log_servers():
     return 1
 
 async def log_commands():
+    print("Logging commands")
     for i in client.servers:
         i = i.id
         for ii in client.commands:
@@ -81,8 +85,6 @@ async def initialize():
         loop=client.loop)
     db.db = dicc['db']
     db.conn = dicc['conn']
-    await log_servers()
-    await log_members()
     logging_blacklist.append(config['logging_blacklist'])
     return
 loop = asyncio.get_event_loop()
@@ -90,6 +92,8 @@ loop.run_until_complete(initialize())
 
 @client.event
 async def on_ready():
+    await log_servers()
+    await log_members()
     logging_blacklist.append(client.user.id)
     await log_commands()
     print('Logged in as '+client.user.name+' (ID:'+client.user.id+') | Connected to '+str(len(client.servers))+' servers | Connected to '+str(len(set(client.get_all_members())))+' users')

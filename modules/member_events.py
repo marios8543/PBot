@@ -19,7 +19,12 @@ async def on_member_join(member):
     msg = await client.send_message(member,srv.entry_text_pm.format(**{'member_name':member.name,'server_name':server.name}))
     await client.add_reaction(msg,'\U0001f44d')
     await asyncio.sleep(1)
-    usr = await srv.make_member(member.id)
+    usr = await srv.get_member(member.id)
+    if not usr:
+        usr = await srv.make_member(member.id)
+    else:
+        usr.verified = 0
+        await usr.update()
     while True:
         res = await client.wait_for_reaction(message=msg)
         if not res:
