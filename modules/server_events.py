@@ -1,15 +1,17 @@
 from pbot_utils import *
+from discord.enums import ChannelType
 import random
 
 #Server join event
 @client.event
 async def on_server_join(server):
-    for channel in server.channels:
-        if 'general' in channel.name:
-            destination = channel
+    destination = None
+    for i in server.channels:
+        if i.type==ChannelType.text and i.permissions_for(server.get_member(client.user.id)).send_messages:
+            destination = i
             break
     if not destination:
-        destination = random.choice(server.channels)        
+        await client.leave_server(server)
     srv = await Utils.make_server(id=server.id)
     await client.send_message(destination,config['join_msg'])
     await client.send_message(destination,"I'll now log all the members in this server to make my work easier...")

@@ -43,7 +43,6 @@ async def log_members():
     for r in res2:
         members.append((int(r.id),int(r.server.id)))
     missing = set(members)-set(db_members)
-    print(missing)
     for m in missing:
         await db.insert(table='members',values={'id':m[0],'server_id':m[1],'verified':1})
         print('Saved missing member {} (ServerID: {})'.format(m[0],m[1]))
