@@ -71,6 +71,7 @@ client = Bot(description="pbot_public", command_prefix=">>")
 warn_whitelist = config['warn_whitelist']
 logging_blacklist = []
 db = pbot_orm.ORM(None,None)
+server_cache = {}
 
 async def initialize():
     if 'dsn' in config:
@@ -103,7 +104,7 @@ def ascii_convert(s):
     else:
         return s    
 
-class User():
+class User:
     id = ""
     name = ""
     server_id = ""
@@ -142,7 +143,7 @@ class User():
             await self.update()
             return 1
 
-class Server():
+class Server:
     id = ""
     name=""
     added_on = ""
@@ -156,6 +157,10 @@ class Server():
     entry_text_pm = ""
     goodbye_text = ""
     max_warnings = 0
+    af_msg = 0
+    af_time = 0
+    af_warn = 0
+    af_enabled = False
 
     async def update(self):
         if self.log_whitelist!=0:
@@ -172,8 +177,13 @@ class Server():
             'entry_text':ascii_convert(self.entry_text),
             'entry_text_pm':ascii_convert(self.entry_text_pm),
             'goodbye_text':ascii_convert(self.goodbye_text),
-            'max_warns':self.max_warnings
+            'max_warns':self.max_warnings,
+            'antiflood_messages':self.af_msg,
+            'antiflood_time':self.af_time,
+            'antiflood_warns':self.af_warn,
+            'antiflood_enabled':int(self.af_enabled)
         }
+        server_cache[self.id] = self
         #print(update_dic)
         await db.update(table='servers',values=update_dic,params={'id':str(self.id)})
         return 1
@@ -216,13 +226,16 @@ class Server():
             if await self.update():
                 return 2                
 
-class Utils():
+class Utils:
 
     async def get_server(id):
+        if id in server_cache:
+            return server_cache[id]
         result = await db.select(table='servers',fields=[
         'added_on','entry_text','entry_text_pm','goodbye_text',
         'log_whitelist','welcome_channel','goodbye_channel','event_channel',
-        'log_channel','log_active','max_warns'],params={'id':id})
+        'log_channel','log_active','max_warns','antiflood_messages','antiflood_time',
+        'antiflood_warns','antiflood_enabled'],params={'id':id})
         id = str(id)
         if result==None:
             return
@@ -250,6 +263,11 @@ class Utils():
         srv.goodbye_text = result.goodbye_text
         srv.max_warnings = int(result.max_warns)
         srv.disc_server = client.get_server(id)
+        srv.af_msg = result.antiflood_messages
+        srv.af_time = result.antiflood_time
+        srv.af_warn = result.antiflood_warns
+        srv.af_enabled = bool(result.antiflood_enabled)
+        server_cache[id] = srv
         return srv
 
     def random(dig):
@@ -278,3 +296,4 @@ class Utils():
     async def delete_server(id):
         await db.delete(table='servers',params={'id':id})
         await db.delete(table='members',params={'server_id':id})
+        server_cache.pop(id)

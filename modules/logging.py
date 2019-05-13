@@ -44,7 +44,7 @@ async def name(ctx):
 #Message delete event
 @client.event
 async def on_message_delete(message):
-    if message.channel.is_private:
+    if message.channel.is_private or message.author.bot:
         return
     srv = await Utils.get_server(message.server.id)
     if not srv or not srv.log_channel:
@@ -79,7 +79,7 @@ async def on_message_delete(message):
 async def on_message_edit(before, after):
     if before.content==after.content:
         return
-    if before.channel.is_private:
+    if before.channel.is_private or before.author.bot:
         return
     srv = await Utils.get_server(before.server.id)
     if not srv or not srv.log_channel:

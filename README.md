@@ -114,5 +114,12 @@ If you want to use >PBot you can use this [invite link](https://discordapp.com/a
   </br>Birthdays you set are only visible in the server you set them in
   </br>The bot will also post a notification in the event channel when it's someone's birthday
 
+- Anti-flooding
+  - antiflood Returns the current antiflood settings for the server
+    - toggle Toggles anti-flooding on and off
+    - settime Sets the time threshold
+    - setwarns Sets the warning count before kick
+    - setmessages Sets the message threshold
+    
 
 More coming soon...
