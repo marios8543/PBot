@@ -37,7 +37,7 @@ async def on_member_join(member):
                 await client.send_message(member,':white_check_mark: You have been verified. Enjoy your stay :champagne:')
             else:
                 await client.send_message(client.get_channel(str(srv.welcome_channel)),':white_check_mark: You have been verified. Enjoy your stay :champagne:')
-            await client.send_message(client.get_channel(str(srv.welcome_channel)),":champagne: **{}** has just been verified. Welcome to the server **{}** :D".format(str(member),member.name))
+            await client.send_message(client.get_channel(str(srv.event_channel)),":champagne: **{}** has just been verified. Welcome to the server **{}** :D".format(str(member),member.name))
             usr.verified = 1
             return await usr.update()
 
