@@ -18,7 +18,7 @@ async def on_member_join(member):
     try:
         msg = await client.send_message(member,srv.entry_text_pm.format(**{'member_name':member.name,'server_name':server.name}))
     except Exception:
-        msg = await client.send_message(client.get_channel(str(srv.welcome_channel)),"<@!{}> Looks like I wasn't able to message you. Click on :thumbsup: to verify yourself")
+        msg = await client.send_message(client.get_channel(str(srv.welcome_channel)),"<@!{}> Looks like I wasn't able to message you. Click on :thumbsup: to verify yourself".format(member.id))
     await client.add_reaction(msg,'\U0001f44d')
     await asyncio.sleep(1)
     usr = await srv.get_member(member.id)
