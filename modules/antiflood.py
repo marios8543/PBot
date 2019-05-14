@@ -6,7 +6,6 @@ class LatestMessage:
         self.user = msg.author
         self.message = msg
         self.timestamp = msg.timestamp
-        self.count = 0
         self.warns = 0
         self.dellist = []
 
@@ -31,34 +30,30 @@ async def message_event(message):
         servers[message.server.id][message.channel.id] = {}
     if message.author.id not in servers[message.server.id][message.channel.id]:
         servers[message.server.id][message.channel.id][message.author.id] = LatestMessage(message)
-        servers[message.server.id][message.channel.id][message.author.id].dellist.append(message)
         return
     latest_message = servers[message.server.id][message.channel.id][message.author.id]
+    latest_message.dellist.append(message)
     if (message.timestamp-latest_message.timestamp).total_seconds()<=srv.af_time:
-        latest_message.dellist.append(message)
-        if latest_message.count>=srv.af_msg:
+        if len(latest_message.dellist)>=srv.af_msg:
             if latest_message.warns<=srv.af_warn or srv.af_warn<=0:
                 latest_message.warns+=1
                 try:
                     await client.delete_messages(latest_message.dellist)
-                    latest_message.dellist = []
-                except Exception:
-                    pass
+                except Exception as e:
+                    print(str(e))
                 try:
                     msg = await client.send_message(message.channel,":anger: Calm down <@!{}>".format(message.author.id))
-                    await sleep(2)
+                    await sleep(1)
                     await client.delete_message(msg)
-                except Exception:
-                    pass
+                except Exception as e:
+                    print(str(e))
             else:
                 if srv.af_warn>0:
                     invite = (await client.create_invite(message.channel,max_age=60,max_uses=1,unique=False)).url
                     await client.send_message(message.author,":exclamation: You have been kicked from **{}** for spamming. Here's a link to get back in. Be better next time\n{}".format(message.server.name,invite))
-                    #await client.kick(message.author)
-                    servers[message.server.id][message.channel.id].pop(message.author.id)
-        latest_message.count+=1
+                    await client.kick(message.author)
     else:
-        servers[message.server.id][message.channel.id][message.author.id].count = 0
+        servers[message.server.id][message.channel.id][message.author.id].dellist = []
     servers[message.server.id][message.channel.id][message.author.id].update(message)
 
 @client.group(pass_context=True)

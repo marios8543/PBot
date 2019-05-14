@@ -13,10 +13,12 @@ async def on_member_join(member):
     try:
         await client.add_roles(member, unverified)
     except:
-        client.send_message(":exclamation: Coulnd't assign Unverified role. Check permissions...")
-        pass
+        client.send_message(server.get_channel(str(srv.log_channel)),":exclamation: Coulnd't assign Unverified role. Check permissions...")
     await client.send_message(client.get_channel(str(srv.welcome_channel)),srv.entry_text.format(**{'member_name':member.name,'server_name':server.name}))
-    msg = await client.send_message(member,srv.entry_text_pm.format(**{'member_name':member.name,'server_name':server.name}))
+    try:
+        msg = await client.send_message(member,srv.entry_text_pm.format(**{'member_name':member.name,'server_name':server.name}))
+    except Exception:
+        msg = await client.send_message(client.get_channel(str(srv.welcome_channel)),"<@!{}> Looks like I wasn't able to message you. Click on :thumbsup: to verify yourself")
     await client.add_reaction(msg,'\U0001f44d')
     await asyncio.sleep(1)
     usr = await srv.get_member(member.id)
@@ -31,8 +33,11 @@ async def on_member_join(member):
             continue
         if res.reaction.emoji == '\U0001f44d':
             await client.remove_roles(member,unverified)
-            await client.send_message(member,':white_check_mark: You have been verified. Enjoy your stay :champagne:')
-            await client.send_message(client.get_channel(str(srv.event_channel)),":champagne: **{}** has just been verified. Welcome to the server **{}** :D".format(str(member),member.name))
+            if msg.channel.is_private:
+                await client.send_message(member,':white_check_mark: You have been verified. Enjoy your stay :champagne:')
+            else:
+                await client.send_message(member,':white_check_mark: You have been verified. Enjoy your stay :champagne:')
+            await client.send_message(client.get_channel(str(srv.welcome_channel)),":champagne: **{}** has just been verified. Welcome to the server **{}** :D".format(str(member),member.name))
             usr.verified = 1
             return await usr.update()
 
