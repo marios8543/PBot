@@ -121,5 +121,8 @@ If you want to use >PBot you can use this [invite link](https://discordapp.com/a
     - setwarns Sets the warning count before kick
     - setmessages Sets the message threshold
     
+- Timed messages
+  - timed *time* Enables timed messages for the specified seconds (Max 300). Disabled them if no time is specified
+  - timed *time* *message* Enables timed messages only for the message from which the command was invoked
 
 More coming soon...
