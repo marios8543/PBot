@@ -1,5 +1,5 @@
 {
-  "join_msg": "Hey I'm PatrolBot. Thanks for inviting me to your server...\n\n        Made with :heart: by tzatzikiweeb.moe#7687\n        https://github.com/marios8543/PBot\n\n        Night Sky /Patrol/\n        discord.tzatzikiweeb.moe\n                                     ",
+  "join_msg": "Hey I'm PatrolBot. Thanks for inviting me to your server...\n\n        Made with :heart: by {}\n        https://github.com/marios8543/PBot\n\n        Night Sky /Patrol/\n        http://discord.tzatzikiweeb.moe\n                                     ",
   "token": "",
   "db_address":"localhost",
   "db_user":"postgres",

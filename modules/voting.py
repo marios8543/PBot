@@ -149,6 +149,8 @@ async def vote(ctx):
             question = msg.content
             if question=='cancel':
                 return await client.say(':zzz: Cancelled...')
+            if len(question)>255:
+                return await client.say(":negative_squared_cross_mark: Voting question can't be longer than 255 characters")
         else:
             return await client.say(':zzz: Vote call timed out...')
         tbd.append(msg)

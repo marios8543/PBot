@@ -13,7 +13,7 @@ async def on_server_join(server):
     if not destination:
         await client.leave_server(server)
     srv = await Utils.make_server(id=server.id)
-    await client.send_message(destination,config['join_msg'])
+    await client.send_message(destination,config['join_msg'].format(await client.get_user_info("196224042988994560")))
     await client.send_message(destination,"I'll now log all the members in this server to make my work easier...")
     await client.send_typing(destination)
     member_count = 0

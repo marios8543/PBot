@@ -23,4 +23,4 @@ async def interpret(ctx):
         
 @client.command()
 async def credits():
-    return await client.say(config['join_msg'])
+    return await client.say(config['join_msg'].format(await client.get_user_info("196224042988994560")))
