@@ -2,6 +2,7 @@ from pbot_utils import *
 import aiohttp
 
 task_list = {}
+diag_context = {}
 
 async def execute(code,ctx):
     # Make an async function with the code and `exec` it
