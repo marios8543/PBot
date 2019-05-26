@@ -30,7 +30,6 @@ async def timed(ctx,time=None,*msg):
         return await client.say(":negative_squared_cross_mark: Invalid time specified")
     if time>300 or time<=0:
         return await client.say(":negative_squared_cross_mark: You can't time messages more than 5 minutes")
-    print(len(msg))
     if len(msg)>0:
         try:
             await client.add_reaction(ctx.message,"\U0001f552")

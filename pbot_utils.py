@@ -10,6 +10,8 @@ from random import randint
 import hashlib
 import pbot_orm
 import os
+import logging
+from asyncio import ensure_future
 
 #Parse config
 with open("config.json","r+") as config:
@@ -19,21 +21,15 @@ with open("config.json","r+") as config:
     if os.getenv('DATABASE_URL'):
         config['dsn']=os.getenv('DATABASE_URL')
 
-if config['logging']=="true":
-    import logging
-    logger = logging.getLogger('discord')
-    logging.basicConfig(level=int(config['log_level']))
-    handler = logging.FileHandler(filename='logs/{}.log'.format(datetime.now().strftime('%Y-%m-%d %H:%M:%S')), encoding='utf-8', mode='w')
-    handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-    logger.addHandler(handler)
-
+logger = logging.getLogger('discord')
+logging.basicConfig(level=int(config['log_level']))
 
 def timestamp():
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     return timestamp
 
 async def log_members():
-    print("Logging missing members")
+    logger.info("Logging missing members")
     res = await db.selectmany(table='members',fields=['id','server_id'])
     res2 = set(client.get_all_members())
     members = []
@@ -45,22 +41,22 @@ async def log_members():
     missing = set(members)-set(db_members)
     for m in missing:
         await db.insert(table='members',values={'id':m[0],'server_id':m[1],'verified':1})
-        print('Saved missing member {} (ServerID: {})'.format(m[0],m[1]))
+        logger.info('Saved missing member {} (ServerID: {})'.format(m[0],m[1]))
     return 1
 
 async def log_servers():
-    print("Logging missing servers")
+    logger.info("Logging missing servers")
     res = await db.selectmany(table='servers',fields=['id'])
     db_servers = [r.id for r in res]
     servers = [int(s.id) for s in client.servers]
     missing = set(servers) - set(db_servers)
     for m in missing:
         await Utils.make_server(id=m)
-        print("Logged missing server ",m)
+        logger.info("Logged missing server "+m)
     return 1
 
 async def log_commands():
-    print("Logging commands")
+    logger.info("Logging commands")
     for i in client.servers:
         i = i.id
         for ii in client.commands:
@@ -72,6 +68,20 @@ warn_whitelist = config['warn_whitelist']
 logging_blacklist = []
 db = pbot_orm.ORM(None,None)
 server_cache = {}
+
+class LogHandler(logging.StreamHandler):
+    def __init__(self,log_channel):
+        self.log_channel = log_channel
+        logging.StreamHandler.__init__(self)
+
+    def emit(self, record):
+        msg = self.format(record)
+        try:
+            if self.log_channel:
+                asyncio.ensure_future(client.send_message(self.log_channel,msg))
+        except Exception as e:
+            logger.error(str(e))
+
 
 async def initialize():
     if 'dsn' in config:
@@ -92,11 +102,14 @@ loop.run_until_complete(initialize())
 
 @client.event
 async def on_ready():
+    handler =LogHandler(client.get_channel(config['log_channel'] if 'log_channel' in config else ''))
+    handler.setFormatter(logging.Formatter('[%(levelname)s][%(asctime)s]%(name)s : %(message)s'))
+    logger.addHandler(handler)
     await log_servers()
     await log_members()
     logging_blacklist.append(client.user.id)
     await log_commands()
-    print('Logged in as '+client.user.name+' (ID:'+client.user.id+') | Connected to '+str(len(client.servers))+' servers | Connected to '+str(len(set(client.get_all_members())))+' users')
+    logger.info('Logged in as '+client.user.name+' (ID:'+client.user.id+') | Connected to '+str(len(client.servers))+' servers | Connected to '+str(len(set(client.get_all_members())))+' users')
 
 def ascii_convert(s):
     if type(s)==str:
@@ -184,7 +197,6 @@ class Server:
             'antiflood_enabled':int(self.af_enabled)
         }
         server_cache[self.id] = self
-        #print(update_dic)
         await db.update(table='servers',values=update_dic,params={'id':str(self.id)})
         return 1
 

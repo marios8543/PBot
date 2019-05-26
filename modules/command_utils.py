@@ -3,6 +3,11 @@ from asyncio import sleep,Lock
 
 @client.event
 async def on_command_completion(command,ctx):
+    if not ctx.message.channel.is_private:
+        chstr = "in {} (ID:{}) on {} (ID:{})".format(ctx.message.channel.name,ctx.message.channel.id,ctx.message.server.name,ctx.message.server.id)
+    else:
+        chstr = "in PM"
+    logger.info("{} (ID:{}) called {} {}".format(ctx.message.author,ctx.message.author.id,command.name,chstr))
     srv = await Utils.get_server(ctx.message.server.id)
     if srv:
         if 'delete_command' in srv.log_active:

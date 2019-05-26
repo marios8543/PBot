@@ -29,7 +29,6 @@ async def emoji(emoji):
             embed.add_field(name='Emoji name', value=emoji.name,inline=False)
             embed.add_field(name='Emoji ID', value=str(emoji.id),inline=False)
             url = "https://media.discordapp.net/emojis/{}".format(emoji.id)
-            print(url)
             embed.set_image(url=url)
             return await client.say(embed=embed)
 

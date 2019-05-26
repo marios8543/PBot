@@ -27,7 +27,6 @@ class Jikan(object):
             url += '/' + extension
             if extension == 'episodes' and isinstance(page, int):
                 url += '/' + page
-        print(url)        
         response = await session.get(url)
         self._check_response(response, id, endpoint)
 

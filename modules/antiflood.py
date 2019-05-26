@@ -1,4 +1,4 @@
-from pbot_utils import client,db,Utils,config
+from pbot_utils import client,db,Utils,config,logger
 from asyncio import sleep
 
 class LatestMessage:
@@ -40,13 +40,13 @@ async def message_event(message):
                 try:
                     await client.delete_messages(latest_message.dellist)
                 except Exception as e:
-                    print(str(e))
+                    logger.error(str(e))
                 try:
                     msg = await client.send_message(message.channel,":anger: Calm down <@!{}>".format(message.author.id))
                     await sleep(1)
                     await client.delete_message(msg)
                 except Exception as e:
-                    print(str(e))
+                    logger.error(str(e))
             else:
                 if srv.af_warn>0:
                     invite = (await client.create_invite(message.channel,max_age=60,max_uses=1,unique=False)).url

@@ -28,9 +28,7 @@ async def rule34(ctx,*tag):
         stm = post['created_at'].split(' ')
         embed.set_footer(text='Created at {}/{}/{}'.format(stm[2],strptime(stm[1],'%b').tm_mon,stm[-1]))
         mes = await client.say(embed=embed)
-        print(post['has_comments'])
         if(post['has_comments']=="false"):
-            print("no comments")
             return
         rule34_comm[str(mes.id)] = post['id']
         await client.add_reaction(mes,"\U0001f4ac")
