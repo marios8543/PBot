@@ -20,6 +20,8 @@ with open("config.json","r+") as config:
         config['token']=os.getenv('discord_token')
     if os.getenv('DATABASE_URL'):
         config['dsn']=os.getenv('DATABASE_URL')
+    if os.getenv('log_channel'):
+        config['log_channel']=os.getenv('log_channel')
 
 logger = logging.getLogger('discord')
 logging.basicConfig(level=int(config['log_level']))

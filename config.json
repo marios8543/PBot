@@ -15,7 +15,7 @@
   "konishi_url":"",
   "default_error":":negative_squared_cross_mark: Oops something went wrong. Try again later...",
   "error_permissions":":negative_squared_cross_mark: You need to have the `{}` permission to use this",
-  "logging":"false",
   "log_level":"20",
-  "debug":"false"
+  "debug":"false",
+  "log_channel":""
 }
