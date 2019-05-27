@@ -1,9 +1,18 @@
 from pbot_utils import *
 from logging import StreamHandler
 import aiohttp
+from sys import exc_info
 
 task_list = {}
 diag_context = {}
+
+@client.event
+async def on_error(ev):
+    err = exc_info()
+    try:
+        logger.error("{}: {}".format(err[0],err[1]))
+    except:
+        pass
 
 async def FakeContext(channel_id,message_id):
     return _FakeContext(await client.get_message(client.get_channel(str(channel_id)),str(message_id)))
@@ -25,12 +34,15 @@ class Task:
         self.code = code
         self.ctx = ctx
         self.task = self.start(ctx=ctx)
+        self.running = True
 
     def stop(self):
+        self.running = False
         return self.task.cancel()
 
     def start(self,ctx=None):
         self.task = client.loop.create_task(execute(self.code,ctx if ctx else self.ctx))
+        self.running = True
         return self.task
 
     async def make_persistent(self):
@@ -50,16 +62,17 @@ async def execute(code,ctx):
     )
     return await locals()['__ex'](ctx)
 
+@client.listen("on_ready")
 async def init_tasks():
-    res = await db.selectmany(table='tasks')
+    logger.info("Starting persistent tasks")
+    res = await db.selectmany(table='tasks',fields=['name','code','enabled','message_id','channel_id'])
     for i in res:
         try:
             if i.enabled:
-                task_list[i.name] = Task(i.name,i.code,FakeContext(i.channel_id,i.message_id))
+                task_list[i.name] = Task(i.name,i.code,await FakeContext(i.channel_id,i.message_id))
                 logger.info("Started persistent task {}".format(i.name))
         except Exception as e:
             logger.error("Failed to start task {} ({})".format(i.name,e))
-
 
 @client.command(pass_context=True)
 async def interpret(ctx):
@@ -123,31 +136,51 @@ async def killtask(ctx,name):
     else:
         return await client.say("No such task")
 
+@client.command(pass_context=True)
+async def starttask(ctx,name):
+    if ctx.message.author.id!="196224042988994560":
+        return await client.say("Only the bot manager can use this")
+    if name in task_list:
+        task_list[name].start()
+        return await client.say("Started task {}".format(name))
+    return await client.say("Task {} not found".format(name))
+
+@client.command(pass_context=True)
+async def deletetask(ctx,name):
+    if ctx.message.author.id!="196224042988994560":
+        return await client.say("Only the bot manager can use this")
+    if name in task_list:
+        if task_list[name].running:
+            task_list[name].stop()
+        task_list.pop(name,None)
+        return await client.say("Deleted task {}".format(name))
+    return await client.say("Task {} not found".format(name))
+
 @client.group(pass_context=True)
 async def tasks(ctx):
     if ctx.invoked_subcommand:
         return
     if ctx.message.author.id!="196224042988994560":
         return await client.say("Only the bot manager can use this")
-    ret = ""
+    ret = "Loaded tasks:\n"
     for i in task_list:
-        ret+=i+'\n'
+        ret+="> {} {}".format(i,"(Running)" if task_list[i].running else "")
     return await client.say(ret)
 
-@client.command(pass_context=True)
+@tasks.command(pass_context=True)
 async def clear(ctx):
     if ctx.message.author.id!="196224042988994560":
         return await client.say("Only the bot manager can use this")
     for i in task_list:
         task_list[i].stop()
         tasks.pop(i,None)
-    return await client.say("Stoped and erased all tasks")    
+    return await client.say("Stoped and erased all tasks")
 
 @tasks.command(pass_context=True)
 async def persistent(ctx):
     if ctx.message.author.id!="196224042988994560":
         return await client.say("Only the bot manager can use this")
-    res = await db.selectmany(table='tasks')
+    res = await db.selectmany(table='tasks',fields=['name','code','enabled','message_id','channel_id'])
     if not res:
         return await client.say("No persistent tasks")
     ret = "Persistent tasks\n"
@@ -166,6 +199,26 @@ async def make_persistent(ctx,name):
         return await client.say("Task {} not found".format(name))
 
 @tasks.command(pass_context=True)
+async def disable_persistent(ctx,name):
+    if ctx.message.author.id!="196224042988994560":
+        return await client.say("Only the bot manager can use this")
+    try:
+        await db.update(table='tasks',values={'enabled':0},params={'name':name})
+        return await client.say("Task disabled successfully")
+    except:
+        return await client.say("Something went wrong. Maybe the task doesn't exist ?")
+
+@tasks.command(pass_context=True)
+async def enable_persistent(ctx,name):
+    if ctx.message.author.id!="196224042988994560":
+        return await client.say("Only the bot manager can use this")
+    try:
+        await db.update(table='tasks',values={'enabled':1},params={'name':name})
+        return await client.say("Task enabled successfully")
+    except:
+        return await client.say("Something went wrong. Maybe the task doesn't exist ?")    
+
+@tasks.command(pass_context=True)
 async def remove_persistent(ctx,name):
     if ctx.message.author.id!="196224042988994560":
         return await client.say("Only the bot manager can use this")
@@ -173,7 +226,7 @@ async def remove_persistent(ctx,name):
         await db.delete(table='tasks',values='*',params={'name':name})
         return await client.say("Task deleted successfully")
     except:
-        return await client.say("Something went wrong. Maybe the task doesn't exist ?")        
+        return await client.say("Something went wrong. Maybe the task doesn't exist ?")     
 
 
 @client.command()

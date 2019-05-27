@@ -6,7 +6,6 @@ votes_running = {}
 def vote_running(ctx):
     for k,v in votes_running.items():
         if v.channel is ctx.message.channel:
-            v.id = k
             return v
 
 class Vote():
@@ -22,11 +21,11 @@ class Vote():
     running = 1
 
     def __init__(self,ctx,question=0,options=0,duration=0,votetype=0,target=0):
+        self.options.clear()
+        self.id = Utils.random(5)
+        self.user = ctx.message.author
+        self.channel = ctx.message.channel
         if votetype==0:
-            self.options.clear()
-            self.id = ctx.message.id
-            self.user = ctx.message.author
-            self.channel = ctx.message.channel
             self.question = question
             for idx,option in enumerate(options):
                 self.options.append({
@@ -36,10 +35,7 @@ class Vote():
                 })
             self.duration = duration
         if votetype==1:
-            self.options.clear()
-            self.id = ctx.message.id
-            self.user = ctx.message.author
-            self.channel = ctx.message.channel
+
             self.target = target
             self.question = 'Should {}#{} be kicked ?'.format(target.name,target.discriminator)
             self.options.append({
@@ -68,8 +64,7 @@ class Vote():
         self.embed_obj = embed
         if send==1:
             self.embed = await client.send_message(self.channel,embed=embed)
-            votes_running[self.embed.id] = self
-            self.id = self.embed.id
+            votes_running[self.id] = self
             return {'embed':embed,'msg':self.embed}
         else:
             return embed
@@ -131,12 +126,11 @@ async def vote(ctx):
     if ctx.invoked_subcommand is None:
         running = vote_running(ctx)
         if running:
-            key = running.id
             await client.delete_message(running.embed)
             msg = await client.say('Vote already running in this channel',embed=running.embed_obj)
             for option in running.options:
                 await client.add_reaction(msg,emoji_unicode[option['emoji']])
-            votes_running[key].embed = msg
+            votes_running[running.id].embed = msg
             return
         question = ""
         options = []
@@ -175,7 +169,8 @@ async def vote(ctx):
         await client.delete_messages(tbd)
         #Vote creation 
         vote = Vote(ctx,question,options,duration)
-        key = (await vote.make_embed())['msg'].id
+        await vote.make_embed()
+        key = vote.id
         for option in vote.options:
             await client.add_reaction(votes_running[key].embed,emoji_unicode[option['emoji']])
         #Timer implementation (rewrite pending)
@@ -266,13 +261,10 @@ async def on_reaction_add(reaction, user):
     if user.id==client.user.id:
         return	
     vote = None
-    if reaction.message.id in votes_running.keys():
-        vote = votes_running[reaction.message.id]
-    else:
-        for v in votes_running:
-            if reaction.message.id==votes_running[v].embed.id:
-                vote = votes_running[v]
-                break
+    for v in votes_running:
+        if reaction.message.id==votes_running[v].embed.id:
+            vote = votes_running[v]
+            break
     if not vote:
         return
     for option in vote.options:
@@ -288,13 +280,10 @@ async def on_reaction_remove(reaction,user):
     if user.id==client.user.id:
         return  
     vote = None
-    if reaction.message.id in votes_running.keys():
-        vote = votes_running[reaction.message.id]
-    else:
-        for v in votes_running:
-            if reaction.message.id==votes_running[v].embed.id:
-                vote = votes_running[v]
-                break
+    for v in votes_running:
+        if reaction.message.id==votes_running[v].embed.id:
+            vote = votes_running[v]
+            break
     if not vote:
         return
     for idx,options in enumerate(vote.options):
