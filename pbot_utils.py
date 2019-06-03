@@ -22,6 +22,8 @@ with open("config.json","r+") as config:
         config['dsn']=os.getenv('DATABASE_URL')
     if os.getenv('log_channel'):
         config['log_channel']=os.getenv('log_channel')
+    if os.getenv('GCLOUD_API'):
+        config['gcloud_api']=os.getenv('GCLOUD_API')
 
 logger = logging.getLogger('discord')
 logging.basicConfig(level=int(config['log_level']))
