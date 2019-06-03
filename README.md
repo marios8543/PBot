@@ -125,4 +125,8 @@ If you want to use >PBot you can use this [invite link](https://discordapp.com/a
   - timed *time* Enables timed messages for the specified seconds (Max 300). Disabled them if no time is specified
   - timed *time* *message* Enables timed messages only for the message from which the command was invoked
 
+- Translate
+  - translate *source language (default:detect)* *target language (default:english)* Will enable translate for the set languages for the channel in which the command was invoked
+  - translate *source language* *target language* *message* Will translate the specific message. All arguments are mandatory here. Pass *auto* as source language to detect automatically.
+
 More coming soon...
