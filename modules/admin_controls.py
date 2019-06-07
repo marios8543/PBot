@@ -109,23 +109,6 @@ async def massdelete(ctx,msgfrom=None,msgto=None):
     else:
        await client.say(config['error_permissions'].format('Manage Messages'))
 
-
-@client.command(pass_context=True)
-async def dashboard(ctx):
-    if Utils.check_perms_ctx(ctx,'manage_server'):
-        id = Utils.random(16)
-        token = Utils.make_hash(timestamp(),id,ctx.message.server.id)
-        await db.insert(table='setting_sessions',values={'id':id,'token':token,'server_id':ctx.message.server.id,'admin_id':ctx.message.author.id})
-        embed = discord.Embed(Title="set_session")
-        embed.set_author(name=">PBot Dashboard Session",icon_url="https://raw.githubusercontent.com/marios8543/Implying_Pbot/master/kamina.png")
-        embed.add_field(name="Click here to go to settings",value=config['url']+"/session.php?token="+token)
-        embed.set_footer(text="New dashboard coming soon...")
-        await client.send_message(ctx.message.author,embed=embed)
-        await client.say(":white_check_mark: Check your DMs...")
-    else:
-        await client.say(config['error_permissions'].format('Manage Server'))
-
-
 @client.command(pass_context=True)
 async def verify(ctx,arg):
     server = await Utils.get_server(ctx.message.server.id)

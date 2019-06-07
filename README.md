@@ -32,8 +32,6 @@ If you want to use >PBot you can use this [invite link](https://discordapp.com/a
     Use **{member_name}** and **{server_name}** accordingly. It's good to include that they need to click on :+1: to get verified.
     - goodbye
     Sets the goodbye message (Use **{member_name}** accordingly).
-  - setdelete
-  Sets so that the message that invoked a command gets deleted automatically after a couple seconds
 
 - Admin Commands:
   - check *tag*  

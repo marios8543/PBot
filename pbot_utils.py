@@ -11,7 +11,6 @@ import hashlib
 import pbot_orm
 import os
 import logging
-from asyncio import ensure_future
 
 #Parse config
 with open("config.json","r+") as config:
@@ -189,7 +188,6 @@ class Server:
             'goodbye_channel':self.goodbye_channel,
             'event_channel':self.event_channel,
             'log_channel':self.log_channel,
-            'log_active':json.dumps(self.log_active),
             'log_whitelist':log_whitelist,
             'entry_text':ascii_convert(self.entry_text),
             'entry_text_pm':ascii_convert(self.entry_text_pm),
@@ -223,22 +221,22 @@ class Server:
         return await self.get_member(id)
 
     async def toggle_logging_msg(self):
-        if self.log_active['msg']==0:
-            self.log_active['msg']=1
+        if self.log_active_message==0:
+            self.log_active_message=1
             if await self.update():
                 return 1              
         else:
-            self.log_active['msg']=0
+            self.log_active_message=0
             if await self.update():
                 return 2
 
     async def toggle_logging_name(self):
-        if self.log_active['name']==0:
-            self.log_active['name']=1
+        if self.log_active_name==0:
+            self.log_active_name=1
             if await self.update():
                 return 1              
         else:
-            self.log_active['name']=0
+            self.log_active_name=0
             if await self.update():
                 return 2                
 
@@ -250,7 +248,7 @@ class Utils:
         result = await db.select(table='servers',fields=[
         'added_on','entry_text','entry_text_pm','goodbye_text',
         'log_whitelist','welcome_channel','goodbye_channel','event_channel',
-        'log_channel','log_active','max_warns','antiflood_messages','antiflood_time',
+        'log_channel','log_active_msg','log_active_name','max_warns','antiflood_messages','antiflood_time',
         'antiflood_warns','antiflood_enabled'],params={'id':id})
         id = str(id)
         if result==None:
@@ -272,7 +270,8 @@ class Utils:
         srv.goodbye_channel = result.goodbye_channel
         srv.event_channel = result.event_channel
         srv.log_channel = result.log_channel
-        srv.log_active = json.loads(result.log_active)
+        srv.log_active_message = result.log_active_msg
+        srv.log_active_name = result.log_active_name 
         srv.log_whitelist = log_whitelist
         srv.entry_text = result.entry_text
         srv.entry_text_pm = result.entry_text_pm

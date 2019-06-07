@@ -1,52 +1,45 @@
 queries=["""
 CREATE TABLE IF NOT EXISTS servers (
-	id	BIGINT,
-	added_on	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	welcome_channel	BIGINT,
-	goodbye_channel	BIGINT,
-	event_channel	BIGINT,
-	log_channel	BIGINT,
-	log_active	TEXT DEFAULT '{"msg":"1","name":"1" ,"votekick":"1", "delete_command":"0"}'	,
-	log_whitelist	TEXT,
-	entry_text	TEXT,
-	entry_text_pm	TEXT,
-	goodbye_text	TEXT,
-	max_warns	INTEGER DEFAULT 3
-);
+    "id" bigint,
+    "added_on" timestamp DEFAULT now(),
+    "welcome_channel" bigint,
+    "goodbye_channel" bigint,
+    "event_channel" bigint,
+    "log_channel" bigint,
+    "log_whitelist" text,
+    "entry_text" text,
+    "entry_text_pm" text,
+    "goodbye_text" text,
+    "max_warns" integer DEFAULT '3',
+    "antiflood_messages" integer DEFAULT '5' NOT NULL,
+    "antiflood_time" integer DEFAULT '3' NOT NULL,
+    "antiflood_warns" integer DEFAULT '4' NOT NULL,
+    "antiflood_enabled" smallint DEFAULT '0' NOT NULL,
+    "log_active_name" smallint DEFAULT '1' NOT NULL,
+    "log_active_msg" smallint DEFAULT '1' NOT NULL
+) WITH (oids = false);
 """
 ,"""
 CREATE TABLE IF NOT EXISTS members (
-	id	BIGINT,
-	server_id	BIGINT,
-	verified	INTEGER DEFAULT 0,
-	in_server	INTEGER DEFAULT 1,
-	warns	INTEGER DEFAULT 0,
-	konishi TEXT DEFAULT NULL,
-	crypto TEXT DEFAULT NULL,
-	birthday date NULL
-);
-"""
-,"""
-CREATE TABLE IF NOT EXISTS setting_sessions (
-	ID	BIGINT,
-	token	TEXT,
-	server_id	BIGINT,
-	admin_id	BIGINT,
-	timestamp	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	valid	INTEGER
-);
+    "id" bigint,
+    "server_id" bigint,
+    "verified" integer DEFAULT '0',
+    "in_server" integer DEFAULT '1',
+    "warns" integer DEFAULT '0',
+    "birthday" date
+) WITH (oids = false);
 """,
 """
 CREATE TABLE IF NOT EXISTS playing_status (
-	usr_id BIGINT,
-	title TEXT
-);
+    "usr_id" bigint,
+    "title" text
+) WITH (oids = false);
 """,
 """
 CREATE TABLE IF NOT EXISTS commands (
-	command TEXT,
-	usages BIGINT DEFAULT 0,
-	server_id BIGINT DEFAULT NULL
-);
+    "command" text,
+    "usages" bigint DEFAULT '0',
+    "server_id" bigint
+) WITH (oids = false);
 """
 ]

@@ -199,49 +199,6 @@ async def vote(ctx):
         await client.say(embed=winner)
         return 1
 
-"""
-@vote.command(pass_context=True)
-async def kick(ctx):
-    if vote_running(ctx):
-        return await client.say(':negative_squared_cross_mark: You can only have one vote running per channel')
-    active = await Utils.get_server(ctx.message.server.id)
-    if active.log_active['votekick']=='1':
-        user = ctx.message.server.get_member(''.join(ctx.message.raw_mentions))
-        vote = Vote(ctx,votetype=1,target=user)
-        msg = await vote.make_embed()
-        embed=msg['embed']
-        msg=msg['msg']
-        for option in vote.options:
-            await client.add_reaction(msg,emoji_unicode[option['emoji']])        
-        elapsed = 0
-        while vote.duration-1>=elapsed:
-            if vote.running!=1:
-                return await client.say(':anger: Vote has been canceled')
-            await asyncio.sleep(1)
-            elapsed = elapsed+1
-            remaining = vote.duration-elapsed
-            if remaining>60:
-                remaining = str(remaining//60)+' minutes remaining'
-            else:
-                remaining = str(remaining)+' seconds remaining'
-            if embed.footer.text!=remaining:
-                embed.set_footer(text=remaining)
-                await client.edit_message(msg,embed=embed)
-            vote.embed_obj = embed    
-        await client.delete_message(msg)
-        winner = vote.get_winner(make_embed=0)        
-        embed = vote.get_winner(make_embed=1)
-        if winner==0:
-            await client.say(embed=embed)
-            await client.send_message(vote.target,':exclamation: You have been kicked because you have been voted off')
-            await client.send_message(vote.target,embed=embed)
-            await client.kick(vote.target)
-        else:
-            await client.say(embed=embed)
-    else:
-        await client.say(':negative_squared_cross_mark: Vote-kicking is disabled in this server...')    
-    return 1      
-"""
 
 @vote.command(pass_context=True)
 async def kill(ctx):

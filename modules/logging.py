@@ -14,10 +14,10 @@ async def msg(ctx):
         server = await Utils.get_server(ctx.message.server.id)
         res = await server.toggle_logging_msg()
         if res==1:
-            await client.say(":white_check_mark: Message change logging is now on")
+            await client.say(":white_check_mark: Message change/delete logging is now on")
             return
         elif res==2:
-            await client.say(":white_check_mark: Message change logging is now off")
+            await client.say(":white_check_mark: Message change/delete logging is now off")
             return        
         else:
             await client.say(config['default_error'])    
@@ -54,7 +54,7 @@ async def on_message_delete(message):
     else:
         whitelist = []    
     logging_whitelist = logging_blacklist + whitelist
-    if srv.log_active['msg'] and str(message.author.id) not in logging_whitelist:
+    if srv.log_active_message and str(message.author.id) not in logging_whitelist:
         if message.embeds:
             message.content = 'Embed below...'
         embed=discord.Embed(title=":exclamation: Deleted message", color=0xff0000)
@@ -90,7 +90,7 @@ async def on_message_edit(before, after):
     else:
         whitelist = []    
     logging_whitelist = logging_blacklist + whitelist
-    if srv.log_active['msg'] and str(before.author.id) not in logging_whitelist:
+    if srv.log_active_message and str(before.author.id) not in logging_whitelist:
         if before.embeds or before.embeds:
             before.content = '1st embed'
             after.content = '2nd embed'      
@@ -113,5 +113,5 @@ async def on_member_update(before, after):
         srv = await Utils.get_server(before.server.id)
         if not srv:
             return
-        if srv.log_active['name']:
+        if srv.log_active_name:
             return await client.send_message(client.get_channel(str(srv.event_channel)), ':anger: '+str(before)+' changed their name from **'+before.name+'** to **'+after.name+'**')     
