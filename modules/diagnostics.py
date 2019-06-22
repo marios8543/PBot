@@ -7,10 +7,10 @@ task_list = {}
 diag_context = {}
 
 @client.event
-async def on_error(ev):
+async def on_error(event, *args, **kwargs):
     err = exc_info()
     try:
-        logger.error("{}: {}".format(err[0],err[1]))
+        logger.error("{}: {} (Event: {})".format(err[0].__name__,err[1],event))
     except:
         pass
 
@@ -33,8 +33,7 @@ class Task:
         self.name = name
         self.code = code
         self.ctx = ctx
-        self.task = self.start(ctx=ctx)
-        self.running = True
+        self.start(ctx=ctx)
 
     def stop(self):
         self.running = False
@@ -43,7 +42,6 @@ class Task:
     def start(self,ctx=None):
         self.task = client.loop.create_task(execute(self.code,ctx if ctx else self.ctx))
         self.running = True
-        return self.task
 
     async def make_persistent(self):
         await db.insert(table="tasks",values={
@@ -232,3 +230,5 @@ async def remove_persistent(ctx,name):
 @client.command()
 async def credits():
     return await client.say(config['join_msg'].format(await client.get_user_info("196224042988994560")))
+
+
