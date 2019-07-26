@@ -34,11 +34,15 @@ async def upcoming(ctx,mon=2):
     async with db.lock:
         await db.db.execute("SELECT id,birthday FROM members WHERE server_id=%s AND birthday BETWEEN %s AND %s",(int(ctx.message.server.id),curr_date,upcm_date,))
         res = await db.db.fetchall()
+    res.sort(key=lambda x:x[1])
     if res:
         ret = "***Upcoming birthdays in __{}__ for the next __{}__ month(s)\n\n***".format(ctx.message.server.name,mon)
         for i in res:
             try:
-                ret+="⮞ __**{}**__ on the **{}** of **{}**\n".format(ctx.message.server.get_member(str(i[0])),i[1].day,i[1].strftime("%B"))
+                user = ctx.message.server.get_member(str(i[0]))
+                if not user:
+                    user = await client.get_user_info(str(i[0]))
+                ret+="> __**{}**__ on the **{}** of **{}**\n".format(user,i[1].day,i[1].strftime("%B"))
             except Exception:
                 continue
         return await client.say(ret)
@@ -89,4 +93,4 @@ async def bday_notifs():
             await sleep(86400)
 
 
-client.loop.create_task(bday_notifs())
+#client.loop.create_task(bday_notifs())
